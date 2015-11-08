@@ -1,0 +1,114 @@
+﻿<Window x:Class="RDAExplorerGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctrls="clr-namespace:RDAExplorerGUI.Controls"
+        Activated="Window_Activated" Loaded="Window_Loaded" Closing="MainWindow_Closing"
+        Title="Anno 1404 RDA Explorer" Height="480" Width="640"
+        Icon="/RDAExplorerGUI;component/Images/Icon_16.ico">
+    <DockPanel>
+        <Menu VerticalAlignment="Top" Background="{DynamicResource Brush_UI_White}"
+          BorderBrush="{DynamicResource Brush_UI_Border}" BorderThickness="0,0,0,1" DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Click="file_New_Click" Name="file_New" Header="New">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/page_white.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Click="file_OpenReadOnly_Click" Name="file_OpenReadOnly" Header="Open (Read only)">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/folder_link.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Click="file_Open_Click" Name="file_Open" Header="Open">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/folder.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Click="file_Save_Click" Name="file_Save" Header="Save" IsEnabled="true">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/disk.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Click="file_SaveAs_Click" Name="file_SaveAs" Header="Save as ..." IsEnabled="true">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/disk_multiple.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Click="file_Exit_Click" Name="file_Exit" Header="Exit">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/cross.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem Click="archive_ExtractAll_Click" Name="archive_ExtractAll" Header="Extract all">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/page_white_copy.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Click="archive_ExtractSelected_Click" Name="archive_ExtractSelected" Header="Extract selected">
+                    <MenuItem.Icon>
+                        <Image Source="/RDAExplorerGUI;component/Images/Icons/page_white_copy.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Click="archive_SearchFile_Click" Name="archive_SearchFile" Header="Search file">
+                    <MenuItem.Icon>
+                        <Image Source="Images/Icons/zoom.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Click="archive_SearchFolder_Click" Name="archive_SearchFolder" Header="Search folder">
+                    <MenuItem.Icon>
+                        <Image Source="Images/Icons/zoom.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource Brush_UI_White}"
+            BorderBrush="{DynamicResource Brush_UI_Border}" BorderThickness="0,1,0,0">
+            <DockPanel Height="21.96">
+                <TextBlock x:Name="label_Status" TextWrapping="Wrap" Text="" Margin="3,3,0,3"/>
+            </DockPanel>
+        </Border>
+        <ProgressBar x:Name="progressBar_Status" Background="White" Height="10" DockPanel.Dock="Bottom"
+                 BorderBrush="{DynamicResource Brush_UI_Border}" Foreground="{DynamicResource Brush_UI_Blue}"
+                 BorderThickness="0,1,0,0" Visibility="Collapsed"/>
+        <ctrls:MultiSelectTreeView x:Name="treeView" AutoRecursive="true" BorderThickness="0" BorderBrush="{x:Null}">
+            <FrameworkElement.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Click="archive_ExtractAll_Click" Name="context_ExtractAll" Header="Extract all">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="16" Source="/RDAExplorerGUI;component/Images/Icons/page_white_copy.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Click="context_AddFiles_Click" Name="context_AddFiles" Header="Add files ...">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="16" Source="/RDAExplorerGUI;component/Images/Icons/add.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Click="context_AddFolder_Click" Name="context_AddFolder" Header="Add folder ...">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="16" Source="/RDAExplorerGUI;component/Images/Icons/add.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Click="context_AddFolderAsRoot_Click" Name="context_AddFolderAsRoot"
+                    Header="Add folder as root ...">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="16" Source="/RDAExplorerGUI;component/Images/Icons/add.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Click="context_NewFolder_Click" Name="context_NewFolder" Header="New folder">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="16" Source="/RDAExplorerGUI;component/Images/Icons/folder_add.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </FrameworkElement.ContextMenu>
+        </ctrls:MultiSelectTreeView>
+    </DockPanel>
+</Window>
