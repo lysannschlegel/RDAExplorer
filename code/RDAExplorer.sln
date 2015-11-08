@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDAExplorer", "RDAExplorer\RDAExplorer.csproj", "{F06F4391-E2ED-4C09-B671-D00871CC5F1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDAExplorerGUI", "RDAExplorerGUI\RDAExplorerGUI.csproj", "{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoModificationManager4", "AnnoModificationManager4\AnnoModificationManager4.csproj", "{579D60F0-65BD-4577-B3D2-A9C80B7D9BAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F06F4391-E2ED-4C09-B671-D00871CC5F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F06F4391-E2ED-4C09-B671-D00871CC5F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F06F4391-E2ED-4C09-B671-D00871CC5F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F06F4391-E2ED-4C09-B671-D00871CC5F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Release|Any CPU.Build.0 = Release|Any CPU
+		{579D60F0-65BD-4577-B3D2-A9C80B7D9BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{579D60F0-65BD-4577-B3D2-A9C80B7D9BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{579D60F0-65BD-4577-B3D2-A9C80B7D9BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{579D60F0-65BD-4577-B3D2-A9C80B7D9BAA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

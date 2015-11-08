@@ -1,0 +1,9 @@
+# Visual Studio junk
+.vs
+obj
+bin
+*.csproj.user
+
+/orig
+/data2070
+/data2205
