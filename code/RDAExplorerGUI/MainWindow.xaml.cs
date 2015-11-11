@@ -87,19 +87,21 @@ namespace RDAExplorerGUI
             FileWatcher_ToUpdate.Clear();
         }
 
-        public void RebuildTreeView()
+        public BackgroundWorker RebuildTreeView()
         {
             BackgroundWorker wrk = new BackgroundWorker();
             wrk.WorkerReportsProgress = true;
             progressBar_Status.Visibility = Visibility.Visible;
             wrk.ProgressChanged += (s, e) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
             {
-                progressBar_Status.Value = (double)e.ProgressPercentage;
+                progressBar_Status.Value = e.ProgressPercentage;
                 label_Status.Text = "Updating UI";
             });
             wrk.DoWork += (s, e) => _RebuildTreeView(wrk);
-            wrk.RunWorkerCompleted += (s, e) => DispatcherExtension.Dispatch(System.Windows.Application.Current, (Action)(() => progressBar_Status.Visibility = Visibility.Collapsed));
+            wrk.RunWorkerCompleted += (s, e) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () => progressBar_Status.Visibility = Visibility.Collapsed);
             wrk.RunWorkerAsync();
+
+            return wrk;
         }
 
         private void _RebuildTreeView(BackgroundWorker wrk)
@@ -517,7 +519,15 @@ namespace RDAExplorerGUI
             reader.backgroundWorker.RunWorkerCompleted += (sender2, e2) =>
             {
                 progressBar_Status.Visibility = Visibility.Collapsed;
-                RebuildTreeView();
+
+                var treeWorker = RebuildTreeView();
+                if (reader.rdaSkippedBlocks > 0)
+                {
+                    treeWorker.RunWorkerCompleted += (wrk, e) =>
+                    {
+                        MessageWindow.Show(reader.rdaSkippedBlocks + " blocks with " + reader.rdaSkippedFiles + " files could not be read. This data will be missing when saving the file!");
+                    };
+                }
             };
             reader.backgroundWorker.RunWorkerAsync();
         }

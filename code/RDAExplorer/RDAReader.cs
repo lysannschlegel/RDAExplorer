@@ -24,12 +24,6 @@ namespace RDAExplorer
         {
         }
 
-        public RDAReader(string file)
-        {
-            FileName = file;
-            ReadRDAFile();
-        }
-
         private void UpdateOutput(string message)
         {
             if (UISettings.EnableConsole)
