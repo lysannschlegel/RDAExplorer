@@ -534,7 +534,7 @@ namespace RDAExplorerGUI
 
         public string GetTitle()
         {
-            return "Anno 1404 RDA Explorer Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            return "Anno 1404/2070/2205 RDA Explorer Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
     }
 }
