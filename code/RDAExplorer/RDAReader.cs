@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -16,9 +17,34 @@ namespace RDAExplorer
         public string FileName;
         private BinaryReader read;
         private FileHeader fileHeader;
-        public uint rdaReadBlocks, rdaSkippedBlocks, rdaSkippedFiles;
+        public uint rdaReadBlocks;
+        private List<BlockInfo> skippedBlocks = new List<BlockInfo>();
         public BackgroundWorker backgroundWorker;
         public string backgroundWorkerLastMessage;
+
+        public IEnumerable<BlockInfo> SkippedBlocks
+        {
+            get
+            {
+                return skippedBlocks;
+            }
+        }
+
+        public uint NumSkippedBlocks
+        {
+            get
+            {
+                return (uint)skippedBlocks.Count;
+            }
+        }
+
+        public ulong NumSkippedFiles
+        {
+            get
+            {
+                return (ulong)skippedBlocks.Sum(block => block.fileCount);
+            }
+        }
 
         public RDAReader()
         {
@@ -52,7 +78,8 @@ namespace RDAExplorer
                 throw new Exception("Invalid or unsupported RDA file!");
             }
 
-            rdaReadBlocks = 0; rdaSkippedBlocks = 0; rdaSkippedFiles = 0;
+            rdaReadBlocks = 0;
+            skippedBlocks.Clear();
             ulong nextBlockOffset = fileHeader.firstBlockOffset;
             while (nextBlockOffset <  (ulong)read.BaseStream.Length)
             {
@@ -60,7 +87,7 @@ namespace RDAExplorer
             }
 
             rdaFolder = RDAFolder.GenerateFrom(rdaFileEntries, fileHeader.version);
-            UpdateOutput("Done. " + rdaFileEntries.Count + " files. " + rdaReadBlocks + " blocks read, " + rdaSkippedBlocks + " encrypted blocks skipped (" + rdaSkippedFiles + " files).");
+            UpdateOutput("Done. " + rdaFileEntries.Count + " files. " + rdaReadBlocks + " blocks read, " + NumSkippedBlocks + " encrypted blocks skipped (" + NumSkippedFiles + " files).");
         }
 
         private static FileHeader ReadFileHeader(BinaryReader reader, FileHeader.Version expectedVersion)
@@ -145,8 +172,7 @@ namespace RDAExplorer
                 if (isEncrypted && fileHeader.version == FileHeader.Version.Version_2_2)
                 {
                     UpdateOutput("Encrypted 2.2 blocks are not yet supported. Skipping (" + blockInfo.fileCount + " files).");
-                    rdaSkippedFiles += blockInfo.fileCount;
-                    ++rdaSkippedBlocks;
+                    skippedBlocks.Add(blockInfo);
                 }
                 else
                 {
