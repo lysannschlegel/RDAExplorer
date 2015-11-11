@@ -5,7 +5,6 @@ using RDAExplorer;
 using RDAExplorerGUI.Misc;
 using RDAExplorerGUI.Properties;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -13,7 +12,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Threading;
 
 namespace RDAExplorerGUI
 {
@@ -239,7 +237,7 @@ namespace RDAExplorerGUI
         {
             if (CurrentReader.rdaFolder.GetAllFiles().Count == 0)
             {
-                int num1 = (int)MessageWindow.Show("Cannot save an empty file!");
+                MessageWindow.Show("Cannot save an empty file!");
             }
             else if (string.IsNullOrEmpty(CurrentFileName))
             {
@@ -247,95 +245,67 @@ namespace RDAExplorerGUI
             }
             else
             {
-                SaveRDAFileWindow saveRdaFileWindow = new SaveRDAFileWindow();
-                saveRdaFileWindow.Folder = CurrentReader.rdaFolder;
-                saveRdaFileWindow.field_OutputFile.Text = CurrentFileName;
-                bool? nullable = saveRdaFileWindow.ShowDialog();
-                if ((!nullable.GetValueOrDefault() ? 0 : (nullable.HasValue ? 1 : 0)) == 0)
-                    return;
-                string fileName = saveRdaFileWindow.field_OutputFile.Text;
-                bool compress = saveRdaFileWindow.check_IsCompressed.IsChecked.Value;
-                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-                RDAWriter writer = new RDAWriter(CurrentReader.rdaFolder);
-                BackgroundWorker wrk = new BackgroundWorker();
-                wrk.WorkerReportsProgress = true;
-                progressBar_Status.Visibility = Visibility.Visible;
-                wrk.ProgressChanged += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
-                {
-                    label_Status.Text = writer.UI_LastMessage;
-                    progressBar_Status.Value = e2.ProgressPercentage;
-                });
-                wrk.RunWorkerCompleted += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
-                {
-                    label_Status.Text = CurrentReader.rdaFolder.GetAllFiles().Count + " files";
-                    progressBar_Status.Visibility = Visibility.Collapsed;
-                });
-                wrk.DoWork += (s, e2) =>
-                {
-                    try
-                    {
-                        writer.Write(fileName, saveRdaFileWindow.SelectedVersion, compress, wrk);
-                    }
-                    catch (Exception ex)
-                    {
-                        int num2 = (int)DispatcherExtension.Dispatch(System.Windows.Application.Current, () => MessageWindow.Show(ex.Message));
-                    }
-                };
-                wrk.RunWorkerAsync();
+                SaveFile(CurrentFileName);
             }
+        }
+
+        private void SaveFile(string fileName)
+        {
+            SaveRDAFileWindow saveRdaFileWindow = new SaveRDAFileWindow();
+            saveRdaFileWindow.Folder = CurrentReader.rdaFolder;
+            saveRdaFileWindow.field_OutputFile.Text = fileName;
+            if (!saveRdaFileWindow.ShowDialog().GetValueOrDefault())
+                return;
+
+            fileName = saveRdaFileWindow.field_OutputFile.Text;
+            bool compress = saveRdaFileWindow.check_IsCompressed.IsChecked.Value;
+
+            if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+
+            RDAWriter writer = new RDAWriter(CurrentReader.rdaFolder);
+            BackgroundWorker wrk = new BackgroundWorker();
+            wrk.WorkerReportsProgress = true;
+            progressBar_Status.Visibility = Visibility.Visible;
+            wrk.ProgressChanged += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
+            {
+                label_Status.Text = writer.UI_LastMessage;
+                progressBar_Status.Value = e2.ProgressPercentage;
+            });
+            wrk.RunWorkerCompleted += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
+            {
+                label_Status.Text = CurrentReader.rdaFolder.GetAllFiles().Count + " files";
+                progressBar_Status.Visibility = Visibility.Collapsed;
+            });
+            wrk.DoWork += (s, e2) =>
+            {
+                try
+                {
+                    writer.Write(fileName, saveRdaFileWindow.SelectedVersion, compress, wrk);
+                }
+                catch (Exception ex)
+                {
+                    int num2 = (int)DispatcherExtension.Dispatch(System.Windows.Application.Current, () => MessageWindow.Show(ex.Message));
+                }
+            };
+            wrk.RunWorkerAsync();
+            return;
         }
 
         private void file_SaveAs_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentReader.rdaFolder.GetAllFiles().Count == 0)
             {
-                int num1 = (int)MessageWindow.Show("Cannot save an empty file!");
+                MessageWindow.Show("Cannot save an empty file!");
             }
             else
             {
                 AnnoModificationManager4.Misc.SaveFileDialog saveFileDialog = new AnnoModificationManager4.Misc.SaveFileDialog();
                 saveFileDialog.Filter = "RDA File|*.rda|Savegame|*.sww|Scenario|*.rdu";
-                bool? nullable1 = saveFileDialog.ShowDialog();
-                if ((!nullable1.GetValueOrDefault() ? 0 : (nullable1.HasValue ? 1 : 0)) == 0)
+                if (!saveFileDialog.ShowDialog().GetValueOrDefault())
                     return;
-                SaveRDAFileWindow saveRdaFileWindow = new SaveRDAFileWindow();
-                saveRdaFileWindow.Folder = CurrentReader.rdaFolder;
-                saveRdaFileWindow.field_OutputFile.Text = saveFileDialog.FileName;
-                bool? nullable2 = saveRdaFileWindow.ShowDialog();
-                if ((!nullable2.GetValueOrDefault() ? 0 : (nullable2.HasValue ? 1 : 0)) == 0)
-                    return;
-                string fileName = saveRdaFileWindow.field_OutputFile.Text;
-                CurrentFileName = fileName;
-                bool compress = saveRdaFileWindow.check_IsCompressed.IsChecked.Value;
-                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-                RDAWriter writer = new RDAWriter(CurrentReader.rdaFolder);
-                BackgroundWorker wrk = new BackgroundWorker();
-                wrk.WorkerReportsProgress = true;
-                progressBar_Status.Visibility = Visibility.Visible;
-                wrk.ProgressChanged += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
-                {
-                    label_Status.Text = writer.UI_LastMessage;
-                    progressBar_Status.Value = e2.ProgressPercentage;
-                });
-                wrk.RunWorkerCompleted += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
-                {
-                    label_Status.Text = CurrentReader.rdaFolder.GetAllFiles().Count + " files";
-                    progressBar_Status.Visibility = Visibility.Collapsed;
-                });
-                wrk.DoWork += (s, e2) =>
-                {
-                    try
-                    {
-                        writer.Write(fileName, saveRdaFileWindow.SelectedVersion, compress, wrk);
-                    }
-                    catch (Exception ex)
-                    {
-                        int num2 = (int)DispatcherExtension.Dispatch(System.Windows.Application.Current, () => MessageWindow.Show(ex.Message));
-                    }
-                };
-                wrk.RunWorkerAsync();
+
+                SaveFile(saveFileDialog.FileName);
             }
         }
 
