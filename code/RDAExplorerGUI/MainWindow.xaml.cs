@@ -521,11 +521,11 @@ namespace RDAExplorerGUI
                 progressBar_Status.Visibility = Visibility.Collapsed;
 
                 var treeWorker = RebuildTreeView();
-                if (reader.rdaSkippedBlocks > 0)
+                if (reader.NumSkippedBlocks > 0)
                 {
                     treeWorker.RunWorkerCompleted += (wrk, e) =>
                     {
-                        MessageWindow.Show(reader.rdaSkippedBlocks + " blocks with " + reader.rdaSkippedFiles + " files could not be read. This data will be missing when saving the file!");
+                        MessageWindow.Show(reader.NumSkippedBlocks + " blocks with " + reader.NumSkippedFiles + " files could not be read. This data will be missing when saving the file!");
                     };
                 }
             };
