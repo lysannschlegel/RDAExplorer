@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 
 namespace RDAExplorer
 {
@@ -9,6 +9,18 @@ namespace RDAExplorer
         public ulong directorySize;
         public ulong decompressedSize;
         public ulong nextBlock;
+
+        public BlockInfo Clone()
+        {
+            return new BlockInfo()
+            {
+                flags = this.flags,
+                fileCount = this.fileCount,
+                directorySize = this.directorySize,
+                decompressedSize = this.decompressedSize,
+                nextBlock = this.nextBlock,
+            };
+        }
 
         public static uint GetSize(FileHeader.Version version)
         {

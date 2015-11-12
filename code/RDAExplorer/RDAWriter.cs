@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RDAExplorer.Misc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -16,30 +17,69 @@ namespace RDAExplorer
             Folder = folder;
         }
 
-        public void Write(string Filename, FileHeader.Version version, bool compress, BackgroundWorker wrk)
+        public void Write(string Filename, FileHeader.Version version, bool compress, RDAReader originalReader, BackgroundWorker wrk)
         {
-            FileStream fileStream = new FileStream(Filename, FileMode.Create);
+            FileStream fileStream = new FileStream(Filename, FileMode.Truncate);
             BinaryWriter writer = new BinaryWriter(fileStream);
 
             // we'll write the header at the end, when we know the offset to the first block
             writer.BaseStream.Position = FileHeader.GetSize(version);
-            ulong firstBlockOffset = 0;
-
+            
             // blocks are organized by file type. there is one RDAFolder per block
             List<RDAFolder> blockFolders = RDABlockCreator.GenerateOf(Folder);
-            BlockInfo[] blockInfos = new BlockInfo[blockFolders.Count];
-            ulong[] blockInfoOffsets = new ulong[blockFolders.Count];
+            int numBlocks = (int)originalReader.NumSkippedBlocks + blockFolders.Count;
+            BlockInfo[] blockInfos = new BlockInfo[numBlocks];
+            ulong[] blockInfoOffsets = new ulong[numBlocks];
+            int writeBlockIndex = 0;
 
-            for (int blockIndex = 0; blockIndex < blockFolders.Count; ++blockIndex)
+            // Write blocks skipped when reading. They have to appear at exactly the place where they came
+            // from, because the file data offsets are encrypted and can therefore not be changed.
+            for (int skippedBlockIndex = 0; skippedBlockIndex < originalReader.NumSkippedBlocks; ++skippedBlockIndex)
             {
-                RDAFolder blockFolder = blockFolders[blockIndex];
+                RDASkippedDataSection skippedBlock = originalReader.SkippedDataSections[skippedBlockIndex];
+
+                if (wrk != null)
+                {
+                    UI_LastMessage = "Writing  Block " + (writeBlockIndex + 1) + "/" + numBlocks + " => ??? files (encrypted)";
+                    wrk.ReportProgress((int)((double)writeBlockIndex / numBlocks * 100.0));
+                }
+
+                // Skip ahead to the correct position.
+                // This will create "holes" in the file if the skipped sections are not contiguous or 
+                // don't start at the beginning of the file, but we'll have to live with it to some extent
+                // anyway (we won't fit our "own" data in perfectly). And I'm just too afraid to get the
+                // bin-packing wrong.
+                writer.BaseStream.WriteBytes((skippedBlock.offset - (ulong)writer.BaseStream.Position), 0);
+                
+                // write the data
+                originalReader.CopySkippedDataSextion(skippedBlock.offset, skippedBlock.size, writer.BaseStream);
+
+                // generate the new block info
+                BlockInfo blockInfo = skippedBlock.blockInfo.Clone();
+                blockInfos[writeBlockIndex] = blockInfo;
+                blockInfoOffsets[writeBlockIndex] = (ulong)writer.BaseStream.Position;
+
+                if (writeBlockIndex > 0)
+                {
+                    blockInfos[writeBlockIndex - 1].nextBlock = blockInfoOffsets[writeBlockIndex];
+                }
+
+                // we'll write the block info at the end, once we know the next block offset
+                writer.BaseStream.Position += BlockInfo.GetSize(version);
+                ++writeBlockIndex;
+            }
+
+            // write regular blocks
+            for (int blockFolderIndex = 0; blockFolderIndex < blockFolders.Count; ++blockFolderIndex)
+            {
+                RDAFolder blockFolder = blockFolders[blockFolderIndex];
 
                 bool compressBlock = compress && blockFolder.RDABlockCreator_FileType_IsCompressable.GetValueOrDefault(false);
 
                 if (wrk != null)
                 {
-                    UI_LastMessage = "Writing Block " + (blockIndex + 1) + "/" + blockFolders.Count + " => " + blockFolder.Files.Count + " files";
-                    wrk.ReportProgress((int)((double)blockIndex / blockFolders.Count * 100.0));
+                    UI_LastMessage = "Writing Block " + (writeBlockIndex + 1) + "/" + numBlocks + " => " + blockFolder.Files.Count + " files";
+                    wrk.ReportProgress((int)((double)writeBlockIndex / numBlocks * 100.0));
                 }
 
                 Dictionary<RDAFile, ulong> dirEntryOffsets = new Dictionary<RDAFile, ulong>();
@@ -82,16 +122,17 @@ namespace RDAExplorer
                     decompressedSize = (ulong)decompressedDirEntriesSize,
                     nextBlock = 0, // will set this at the end of the next block
                 };
-                blockInfos[blockIndex] = blockInfo;
-                blockInfoOffsets[blockIndex] = (ulong)writer.BaseStream.Position;
+                blockInfos[writeBlockIndex] = blockInfo;
+                blockInfoOffsets[writeBlockIndex] = (ulong)writer.BaseStream.Position;
 
-                if (blockIndex == 0)
-                    firstBlockOffset = blockInfoOffsets[blockIndex];
-                else
-                    blockInfos[blockIndex - 1].nextBlock = blockInfoOffsets[blockIndex];
+                if (writeBlockIndex > 0)
+                {
+                    blockInfos[writeBlockIndex - 1].nextBlock = blockInfoOffsets[writeBlockIndex];
+                }
 
                 // we'll write the block info at the end, once we know the next block offset
                 writer.BaseStream.Position += BlockInfo.GetSize(version);
+                ++writeBlockIndex;
             }
             // the last block gets nextBlockOffset after end of file
             blockInfos[blockInfos.Length - 1].nextBlock = blockInfoOffsets[blockInfos.Length - 1] + BlockInfo.GetSize(version);
@@ -102,7 +143,7 @@ namespace RDAExplorer
 
             // now write the header
             FileHeader fileHeader = FileHeader.Create(version);
-            fileHeader.firstBlockOffset = firstBlockOffset;
+            fileHeader.firstBlockOffset = blockInfoOffsets[0];
             WriteHeader(writer, 0, fileHeader, version);
 
             fileStream.Close();

@@ -36,9 +36,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Misc\StreamExtension.cs" />
     <Compile Include="RDABlockCreator.cs" />
     <Compile Include="RDAFile.cs" />
     <Compile Include="RDAFileExtension.cs" />
+    <Compile Include="RDASkippedDataSection.cs" />
     <Compile Include="RDAWriter.cs" />
     <Compile Include="RDAReader.cs" />
     <Compile Include="RDAFileStreamCache.cs" />

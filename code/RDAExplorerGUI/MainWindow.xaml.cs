@@ -281,7 +281,7 @@ namespace RDAExplorerGUI
             {
                 try
                 {
-                    writer.Write(fileName, saveRdaFileWindow.SelectedVersion, compress, wrk);
+                    writer.Write(fileName, saveRdaFileWindow.SelectedVersion, compress, CurrentReader, wrk);
                 }
                 catch (Exception ex)
                 {
