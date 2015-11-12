@@ -6,7 +6,7 @@ The RDA Explorer is a Windows Application that can read and save the RDA file fo
 
 # License
 
-See LICENSE file.
+See LICENSE.txt file.
 
 This project is not affiliated in any way with Ubisoft.<br />
 Anno 2070, Anno 2205, Ubisoft and the Ubisoft logo are trademarks of Ubisoft Entertainment in the US and/or other countries. Anno, Blue Byte and the Blue Byte logo are trademarks of Ubisoft GmbH in the US and/or other countries. 
