@@ -265,10 +265,12 @@ namespace RDAExplorerGUI
             SaveRDAFileWindow saveRdaFileWindow = new SaveRDAFileWindow();
             saveRdaFileWindow.Folder = CurrentReader.rdaFolder;
             saveRdaFileWindow.field_OutputFile.Text = fileName;
+            saveRdaFileWindow.MustChooseFolderVersionDueToEncryptedBlocks = CurrentReader.SkippedDataSections.Count > 0;
             if (!saveRdaFileWindow.ShowDialog().GetValueOrDefault())
                 return;
 
             fileName = saveRdaFileWindow.field_OutputFile.Text;
+            FileHeader.Version version = CurrentReader.SkippedDataSections.Count > 0 ? CurrentReader.rdaFolder.Version : saveRdaFileWindow.SelectedVersion;
             bool compress = saveRdaFileWindow.check_IsCompressed.IsChecked.Value;
 
             if (!Directory.Exists(Path.GetDirectoryName(fileName)))
@@ -292,7 +294,7 @@ namespace RDAExplorerGUI
             {
                 try
                 {
-                    writer.Write(fileName, saveRdaFileWindow.SelectedVersion, compress, CurrentReader, wrk);
+                    writer.Write(fileName, version, compress, CurrentReader, wrk);
                 }
                 catch (Exception ex)
                 {

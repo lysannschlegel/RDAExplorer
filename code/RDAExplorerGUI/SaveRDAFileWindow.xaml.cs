@@ -8,8 +8,9 @@ namespace RDAExplorerGUI
 {
     public partial class SaveRDAFileWindow
     {
-        public RDAFolder Folder;
-        public FileHeader.Version SelectedVersion;
+        public RDAFolder Folder = null;
+        public FileHeader.Version SelectedVersion = FileHeader.Version.Invalid;
+        public bool MustChooseFolderVersionDueToEncryptedBlocks = false;
 
         public SaveRDAFileWindow()
         {
@@ -28,7 +29,7 @@ namespace RDAExplorerGUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            SelectedVersion = Folder.Version == FileHeader.Version.Invalid ? FileHeader.Version.Version_2_2 : Folder.Version;
+            SelectedVersion = Folder.Version;
 
             // add version RadioButtons
             foreach (var version in (FileHeader.Version[])Enum.GetValues(typeof(FileHeader.Version)))
@@ -43,6 +44,13 @@ namespace RDAExplorerGUI
 
                     if (SelectedVersion == version)
                         radioButton.IsChecked = true;
+
+                    if (MustChooseFolderVersionDueToEncryptedBlocks)
+                    {
+                        radioButton.IsEnabled = false;
+                        radioButton.ToolTip = "Files with encrypted blocks must be saved with the same version as the original.";
+                        ToolTipService.SetShowOnDisabled(radioButton, true);
+                    }
 
                     versionsPanel.Children.Add(radioButton);
                 }
