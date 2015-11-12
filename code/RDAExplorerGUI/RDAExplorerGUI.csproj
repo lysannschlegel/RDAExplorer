@@ -58,6 +58,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Misc\RDASkippedDataSectionTreeViewItem.xaml.cs">
+      <DependentUpon>RDASkippedDataSectionTreeViewItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Misc\TreeViewExtension.cs" />
     <Compile Include="SaveRDAFileWindow.xaml.cs">
       <DependentUpon>SaveRDAFileWindow.xaml</DependentUpon>
@@ -76,6 +79,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Misc\RDASkippedDataSectionTreeViewItem.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Misc\RDAFileTreeViewItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

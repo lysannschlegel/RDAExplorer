@@ -125,7 +125,10 @@ namespace RDAExplorerGUI
                 foreach (RDASkippedDataSection skippedBlock in CurrentReader.SkippedDataSections)
                 {
                     string title = skippedBlock.blockInfo.fileCount + " encrypted files";
-                    treeView.Items.Add(new TreeViewItem() { Header = ControlExtension.BuildImageTextblock("pack://application:,,,/Images/Icons/error.png", title) });
+                    treeView.Items.Add(new RDASkippedDataSectionTreeViewItem() {
+                        Section = skippedBlock,
+                        Header = ControlExtension.BuildImageTextblock("pack://application:,,,/Images/Icons/error.png", title)
+                    });
                 }
             });
         }
