@@ -19,7 +19,7 @@ namespace RDAExplorer
 
         public void Write(string Filename, FileHeader.Version version, bool compress, RDAReader originalReader, BackgroundWorker wrk)
         {
-            FileStream fileStream = new FileStream(Filename, FileMode.Truncate);
+            FileStream fileStream = new FileStream(Filename, FileMode.Create);
             BinaryWriter writer = new BinaryWriter(fileStream);
 
             // we'll write the header at the end, when we know the offset to the first block
