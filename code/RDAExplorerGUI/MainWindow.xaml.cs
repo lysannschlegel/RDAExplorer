@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 
 namespace RDAExplorerGUI
@@ -107,15 +108,27 @@ namespace RDAExplorerGUI
             DispatcherExtension.Dispatch(System.Windows.Application.Current, () =>
             {
                 treeView.Items.Clear();
-                RDAFolder rdaFolder1 = CurrentReader.rdaFolder;
-                foreach (RDAFolder rdaFolder2 in rdaFolder1.Folders)
+
+                RDAFolder root = CurrentReader.rdaFolder;
+                foreach (RDAFolder folder in root.Folders)
+                {
                     treeView.Items.Add(new RDAFolderTreeViewItem()
                     {
-                        Folder = rdaFolder2,
-                        Header = ControlExtension.BuildImageTextblock("pack://application:,,,/Images/Icons/folder.png", rdaFolder2.Name)
+                        Folder = folder,
+                        Header = ControlExtension.BuildImageTextblock("pack://application:,,,/Images/Icons/folder.png", folder.Name)
                     });
-                foreach (RDAFile file in rdaFolder1.Files)
+                }
+
+                foreach (RDAFile file in root.Files)
+                {
                     treeView.Items.Add(Misc.RDAFileExtension.ToTreeViewItem(file));
+                }
+
+                foreach (RDASkippedDataSection skippedBlock in CurrentReader.SkippedDataSections)
+                {
+                    string title = skippedBlock.blockInfo.fileCount + " encrypted files";
+                    treeView.Items.Add(new TreeViewItem() { Header = ControlExtension.BuildImageTextblock("pack://application:,,,/Images/Icons/error.png", title) });
+                }
             });
         }
 
