@@ -18,15 +18,15 @@ namespace RDAExplorer
         private BinaryReader read;
         private FileHeader fileHeader;
         public uint rdaReadBlocks;
-        private List<BlockInfo> skippedBlocks = new List<BlockInfo>();
+        private List<RDASkippedDataSection> skippedDataSections = new List<RDASkippedDataSection>();
         public BackgroundWorker backgroundWorker;
         public string backgroundWorkerLastMessage;
 
-        public IEnumerable<BlockInfo> SkippedBlocks
+        public IList<RDASkippedDataSection> SkippedDataSections
         {
             get
             {
-                return skippedBlocks;
+                return skippedDataSections;
             }
         }
 
@@ -34,7 +34,7 @@ namespace RDAExplorer
         {
             get
             {
-                return (uint)skippedBlocks.Count;
+                return (uint)skippedDataSections.Count;
             }
         }
 
@@ -42,7 +42,7 @@ namespace RDAExplorer
         {
             get
             {
-                return (ulong)skippedBlocks.Sum(block => block.fileCount);
+                return (ulong)skippedDataSections.Sum(section => section.blockInfo.fileCount);
             }
         }
 
@@ -79,12 +79,19 @@ namespace RDAExplorer
             }
 
             rdaReadBlocks = 0;
-            skippedBlocks.Clear();
-            ulong nextBlockOffset = fileHeader.firstBlockOffset;
-            while (nextBlockOffset <  (ulong)read.BaseStream.Length)
+            skippedDataSections.Clear();
+
+            ulong beginningOfDataSection = (ulong)read.BaseStream.Position;
+            ulong currentBlockOffset = fileHeader.firstBlockOffset;
+            while (currentBlockOffset <  (ulong)read.BaseStream.Length)
             {
-                nextBlockOffset = ReadBlock(nextBlockOffset);
+                ulong nextBlockOffset = ReadBlock(currentBlockOffset, beginningOfDataSection);
+                beginningOfDataSection = currentBlockOffset + BlockInfo.GetSize(fileHeader.version);
+                currentBlockOffset = nextBlockOffset;
             }
+
+            // When writing we need to make sure that the section that is latest in the file is the last one in this list.
+            skippedDataSections.Sort((a, b) => a.offset.CompareTo(b.offset));
 
             rdaFolder = RDAFolder.GenerateFrom(rdaFileEntries, fileHeader.version);
             UpdateOutput("Done. " + rdaFileEntries.Count + " files. " + rdaReadBlocks + " blocks read, " + NumSkippedBlocks + " encrypted blocks skipped (" + NumSkippedFiles + " files).");
@@ -133,7 +140,7 @@ namespace RDAExplorer
             return GetUIntSizeVersionAware(fileHeader.version);
         }
 
-        private ulong ReadBlock(ulong Offset)
+        private ulong ReadBlock(ulong Offset, ulong beginningOfDataSection)
         {
             UpdateOutput("----- Reading Block at " + Offset);
             read.BaseStream.Position = (long)Offset;
@@ -172,7 +179,11 @@ namespace RDAExplorer
                 if (isEncrypted && fileHeader.version == FileHeader.Version.Version_2_2)
                 {
                     UpdateOutput("Encrypted 2.2 blocks are not yet supported. Skipping (" + blockInfo.fileCount + " files).");
-                    skippedBlocks.Add(blockInfo);
+                    skippedDataSections.Add(new RDASkippedDataSection() {
+                        blockInfo = blockInfo,
+                        offset = beginningOfDataSection,
+                        size = (Offset - beginningOfDataSection),
+                    });
                 }
                 else
                 {
@@ -190,6 +201,7 @@ namespace RDAExplorer
                     {
                         ulong compressedSize = ReadUIntVersionAware(read);
                         ulong uncompressedSize = ReadUIntVersionAware(read);
+                        // TODO is 8 correct?
                         mrm = new RDAMemoryResidentHelper((ulong)read.BaseStream.Position - 8 - blockInfo.directorySize - compressedSize, uncompressedSize, compressedSize, read.BaseStream, blockInfo);
                     }
 
@@ -231,6 +243,13 @@ namespace RDAExplorer
                 rdaFileEntries.Add(rdaFile);
                 rdaFileBlock.Add(rdaFile);
             }
+        }
+
+        public void CopySkippedDataSextion(ulong offset, ulong size, Stream output)
+        {
+            read.BaseStream.Position = (long)offset;
+            read.BaseStream.CopyLimited(output, size);
+            // TODO memory resident?
         }
 
         public void Dispose()
