@@ -8,6 +8,7 @@ namespace RDAExplorer
     {
         public string OverwrittenFilePath = "";
         public string FileName;
+        public FileHeader.Version Version;
         public Flag Flags;
         public ulong Offset;
         public ulong UncompressedSize;
@@ -36,7 +37,7 @@ namespace RDAExplorer
             if (string.IsNullOrEmpty(OverwrittenFilePath))
             {
                 if ((Flags & Flag.Encrypted) == Flag.Encrypted)
-                    numArray = BinaryExtension.Decrypt(numArray);
+                    numArray = BinaryExtension.Decrypt(numArray, BinaryExtension.GetDecryptionSeed(Version));
                 if ((Flags & Flag.Compressed) == Flag.Compressed)
                     numArray = ZLib.ZLib.Uncompress(numArray, (int)UncompressedSize);
             }
@@ -60,10 +61,11 @@ namespace RDAExplorer
             new FileInfo(destinationfile).LastWriteTime = TimeStamp;
         }
 
-        public static RDAFile FromUnmanaged(DirEntry dir, BlockInfo block, BinaryReader reader, RDAMemoryResidentHelper mrm)
+        public static RDAFile FromUnmanaged(FileHeader.Version version, DirEntry dir, BlockInfo block, BinaryReader reader, RDAMemoryResidentHelper mrm)
         {
             RDAFile rdaFile = new RDAFile();
             rdaFile.FileName = dir.filename;
+            rdaFile.Version = version;
             if ((block.flags & 4) != 4)
             {
                 if ((block.flags & 1) == 1)
@@ -83,11 +85,12 @@ namespace RDAExplorer
             return rdaFile;
         }
 
-        public static RDAFile Create(string file, string folderpath)
+        public static RDAFile Create(FileHeader.Version version, string file, string folderpath)
         {
             FileInfo fileInfo = new FileInfo(file);
             RDAFile rdaFile = new RDAFile();
             rdaFile.FileName = FileNameToRDAFileName(file, folderpath);
+            rdaFile.Version = version;
             rdaFile.OverwrittenFilePath = file;
             rdaFile.TimeStamp = fileInfo.LastWriteTime;
             rdaFile.Offset = 0;
