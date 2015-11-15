@@ -2,7 +2,10 @@
 
 The RDA Explorer is a Windows Application that can read and save the RDA file format used in Anno 1404, 2070 and 2205.
 
-**Note:** Adjustments for the new file format used in Anno 2205 is still in early stages and not tested very well. If you encounter any bugs, please let me know by creating an issue. Pull requests are also welcome :)
+You can download a pre-release version of the new RDA Explorer here: [Releases](https://github.com/lysannschlegel/RDAExplorer/releases)
+
+**Note:** Adjustments for the new file format used in Anno 2205 is still in early stages and not tested very well. Also the changes might have broken somthing for the old file format.<br/>
+If you encounter any bugs, please let me know by creating an issue. Pull requests are also welcome :)
 
 # License
 
