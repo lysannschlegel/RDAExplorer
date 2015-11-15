@@ -83,7 +83,7 @@ namespace RDAExplorer
 
             ulong beginningOfDataSection = (ulong)read.BaseStream.Position;
             ulong currentBlockOffset = fileHeader.firstBlockOffset;
-            while (currentBlockOffset <  (ulong)read.BaseStream.Length)
+            while (currentBlockOffset < (ulong)read.BaseStream.Length)
             {
                 ulong nextBlockOffset = ReadBlock(currentBlockOffset, beginningOfDataSection);
                 beginningOfDataSection = currentBlockOffset + BlockInfo.GetSize(fileHeader.version);
@@ -145,7 +145,8 @@ namespace RDAExplorer
             UpdateOutput("----- Reading Block at " + Offset);
             read.BaseStream.Position = (long)Offset;
 
-            BlockInfo blockInfo = new BlockInfo {
+            BlockInfo blockInfo = new BlockInfo
+            {
                 flags = read.ReadUInt32(),
                 fileCount = read.ReadUInt32(),
                 directorySize = ReadUIntVersionAware(read),
@@ -176,45 +177,49 @@ namespace RDAExplorer
                 if (blockInfo.flags == 0)
                     UpdateOutput("No Flags");
 
-                if (isEncrypted && fileHeader.version == FileHeader.Version.Version_2_2)
+                int decryptionSeed = 0;
+                if (isEncrypted)
                 {
-                    UpdateOutput("Encrypted 2.2 blocks are not yet supported. Skipping (" + blockInfo.fileCount + " files).");
-                    skippedDataSections.Add(new RDASkippedDataSection() {
-                        blockInfo = blockInfo,
-                        offset = beginningOfDataSection,
-                        size = (Offset - beginningOfDataSection),
-                    });
-                }
-                else
-                {
-                    read.BaseStream.Position = (long)(Offset - blockInfo.directorySize);
-                    if (isMemoryResident)
-                        read.BaseStream.Position -= GetUIntSizeVersionAware() * 2;
-                    byte[] numArray2 = read.ReadBytes((int)blockInfo.directorySize);
-                    if (isEncrypted)
-                        numArray2 = BinaryExtension.Decrypt(numArray2);
-                    if (isCompressed)
-                        numArray2 = ZLib.ZLib.Uncompress(numArray2, (int)blockInfo.decompressedSize);
-
-                    RDAMemoryResidentHelper mrm = null;
-                    if (isMemoryResident)
-                    {
-                        ulong compressedSize = ReadUIntVersionAware(read);
-                        ulong uncompressedSize = ReadUIntVersionAware(read);
-                        // TODO is 8 correct?
-                        mrm = new RDAMemoryResidentHelper((ulong)read.BaseStream.Position - 8 - blockInfo.directorySize - compressedSize, uncompressedSize, compressedSize, read.BaseStream, blockInfo);
+                    try {
+                        decryptionSeed = BinaryExtension.GetDecryptionSeed(fileHeader.version);
+                    } catch (ArgumentException e) {
+                        UpdateOutput("Skipping (" + blockInfo.fileCount + " files) -- " + e.Message);
+                        skippedDataSections.Add(new RDASkippedDataSection()
+                        {
+                            blockInfo = blockInfo,
+                            offset = beginningOfDataSection,
+                            size = (Offset - beginningOfDataSection),
+                        });
+                        return blockInfo.nextBlock;
                     }
-
-                    uint dirEntrySize = DirEntry.GetSize(fileHeader.version);
-                    if (blockInfo.fileCount * dirEntrySize != blockInfo.decompressedSize)
-                        throw new Exception("Unexpected directory entry size or count");
-
-                    List<RDAFile> rdaFileBlock = new List<RDAFile>();
-                    rdaFileBlocks.Add(rdaFileBlock);
-                    ++rdaReadBlocks;
-                    UpdateOutput("-- DirEntries:");
-                    ReadDirEntries(numArray2, blockInfo, mrm, rdaFileBlock);
                 }
+                read.BaseStream.Position = (long)(Offset - blockInfo.directorySize);
+                if (isMemoryResident)
+                    read.BaseStream.Position -= GetUIntSizeVersionAware() * 2;
+                byte[] numArray2 = read.ReadBytes((int)blockInfo.directorySize);
+                if (isEncrypted)
+                    numArray2 = BinaryExtension.Decrypt(numArray2, decryptionSeed);
+                if (isCompressed)
+                    numArray2 = ZLib.ZLib.Uncompress(numArray2, (int)blockInfo.decompressedSize);
+
+                RDAMemoryResidentHelper mrm = null;
+                if (isMemoryResident)
+                {
+                    ulong compressedSize = ReadUIntVersionAware(read);
+                    ulong uncompressedSize = ReadUIntVersionAware(read);
+                    // TODO is 8 correct?
+                    mrm = new RDAMemoryResidentHelper((ulong)read.BaseStream.Position - 8 - blockInfo.directorySize - compressedSize, uncompressedSize, compressedSize, read.BaseStream, blockInfo, fileHeader.version);
+                }
+
+                uint dirEntrySize = DirEntry.GetSize(fileHeader.version);
+                if (blockInfo.fileCount * dirEntrySize != blockInfo.decompressedSize)
+                    throw new Exception("Unexpected directory entry size or count");
+
+                List<RDAFile> rdaFileBlock = new List<RDAFile>();
+                rdaFileBlocks.Add(rdaFileBlock);
+                ++rdaReadBlocks;
+                UpdateOutput("-- DirEntries:");
+                ReadDirEntries(numArray2, blockInfo, mrm, rdaFileBlock);
             }
 
             return blockInfo.nextBlock;
@@ -230,7 +235,8 @@ namespace RDAExplorer
                 byte[] fileNameBytes = reader.ReadBytes((int)DirEntry.GetFilenameSize());
                 string fileNameString = Encoding.Unicode.GetString(fileNameBytes).Replace("\0", "");
 
-                DirEntry dirEntry = new DirEntry {
+                DirEntry dirEntry = new DirEntry
+                {
                     filename = fileNameString,
                     offset = ReadUIntVersionAware(reader),
                     compressed = ReadUIntVersionAware(reader),
@@ -239,7 +245,7 @@ namespace RDAExplorer
                     unknown = ReadUIntVersionAware(reader),
                 };
 
-                RDAFile rdaFile = RDAFile.FromUnmanaged(dirEntry, block, read, mrm);
+                RDAFile rdaFile = RDAFile.FromUnmanaged(fileHeader.version, dirEntry, block, read, mrm);
                 rdaFileEntries.Add(rdaFile);
                 rdaFileBlock.Add(rdaFile);
             }

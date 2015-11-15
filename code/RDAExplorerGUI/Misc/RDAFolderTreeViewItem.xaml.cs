@@ -134,7 +134,7 @@ namespace RDAExplorerGUI.Misc
                 RDAFile rdafile = Folder.Files.Find(f => f.FileName == generatedRDAFileName);
                 if (rdafile == null)
                 {
-                    RDAFile rdaFile = RDAFile.Create(file, Folder.FullPath);
+                    RDAFile rdaFile = RDAFile.Create(Folder.Version, file, Folder.FullPath);
                     if (rdaFile != null)
                         Folder.Files.Add(rdaFile);
                 }
@@ -157,7 +157,7 @@ namespace RDAExplorerGUI.Misc
                 RDAFile rdafile = Folder.GetAllFiles().Find(f => f.FileName == rdaDestFile);
                 if (rdafile == null)
                 {
-                    RDAFile rdaFile = RDAFile.Create(str, folderpath);
+                    RDAFile rdaFile = RDAFile.Create(Folder.Version, str, folderpath);
                     if (rdaFile != null)
                         files.Add(rdaFile);
                 }
@@ -181,7 +181,7 @@ namespace RDAExplorerGUI.Misc
                 RDAFile rdafile = Folder.GetAllFiles().Find((Predicate<RDAFile>)(f => f.FileName == rdaDestFile));
                 if (rdafile == null)
                 {
-                    RDAFile rdaFile = RDAFile.Create(str, folderpath);
+                    RDAFile rdaFile = RDAFile.Create(Folder.Version, str, folderpath);
                     if (rdaFile != null)
                         files.Add(rdaFile);
                 }
