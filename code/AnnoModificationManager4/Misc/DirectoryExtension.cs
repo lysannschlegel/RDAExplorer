@@ -48,9 +48,17 @@ namespace AnnoModificationManager4.Misc
             string[] directories = Directory.GetDirectories(dir);
             string[] files = Directory.GetFiles(dir);
             foreach (string path in directories)
-                Directory.Delete(path, true);
+            {
+                try {
+                    Directory.Delete(path, true);
+                } catch { }
+            }
             foreach (string path in files)
-                File.Delete(path);
+            {
+                try {
+                    File.Delete(path);
+                } catch { }
+            }
         }
     }
 }
