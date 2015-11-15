@@ -77,7 +77,7 @@ namespace RDAExplorerGUI
                 foreach (RDAFile rdaFile in FileWatcher_ToUpdate)
                 {
                     string str2 = DirectoryExtension.GetTempWorkingDirectory() + "\\" + rdaFile.FileName;
-                    string str3 = StringExtension.MakeUnique(Path.ChangeExtension(str2, null) + "$", Path.GetExtension(str2), (d => Directory.Exists(d)));
+                    string str3 = StringExtension.MakeUnique(Path.ChangeExtension(str2, null) + "$", Path.GetExtension(str2), (d => File.Exists(d)));
                     File.Copy(str2, str3);
                     rdaFile.SetFile(str3);
                 }
