@@ -104,7 +104,7 @@ namespace RDAExplorer
                         compressed = dirEntryCompressedSizes[file],
                         filesize = file.UncompressedSize,
                         filename = file.FileName,
-                        timestamp = (ulong)file.TimeStamp.ToFileTime(),
+                        timestamp = file.TimeStamp.ToTimeStamp(),
                         unknown = 0,
                         offset = dirEntryOffsets[file],
                     };
