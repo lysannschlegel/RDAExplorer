@@ -12,7 +12,6 @@ namespace RDAExplorer
     public class RDAReader : IDisposable
     {
         private List<RDAFile> rdaFileEntries = new List<RDAFile>();
-        private List<List<RDAFile>> rdaFileBlocks = new List<List<RDAFile>>();
         public RDAFolder rdaFolder = new RDAFolder(FileHeader.Version.Version_2_2);
         public string FileName;
         private BinaryReader read;
@@ -215,17 +214,15 @@ namespace RDAExplorer
                 if (blockInfo.fileCount * dirEntrySize != blockInfo.decompressedSize)
                     throw new Exception("Unexpected directory entry size or count");
 
-                List<RDAFile> rdaFileBlock = new List<RDAFile>();
-                rdaFileBlocks.Add(rdaFileBlock);
                 ++rdaReadBlocks;
                 UpdateOutput("-- DirEntries:");
-                ReadDirEntries(numArray2, blockInfo, mrm, rdaFileBlock);
+                ReadDirEntries(numArray2, blockInfo, mrm);
             }
 
             return blockInfo.nextBlock;
         }
 
-        private void ReadDirEntries(byte[] buffer, BlockInfo block, RDAMemoryResidentHelper mrm, List<RDAFile> rdaFileBlock)
+        private void ReadDirEntries(byte[] buffer, BlockInfo block, RDAMemoryResidentHelper mrm)
         {
             MemoryStream memoryStream = new MemoryStream(buffer);
             BinaryReader reader = new BinaryReader(memoryStream);
@@ -247,7 +244,6 @@ namespace RDAExplorer
 
                 RDAFile rdaFile = RDAFile.FromUnmanaged(fileHeader.version, dirEntry, block, read, mrm);
                 rdaFileEntries.Add(rdaFile);
-                rdaFileBlock.Add(rdaFile);
             }
         }
 
