@@ -204,10 +204,10 @@ namespace RDAExplorer
                 RDAMemoryResidentHelper mrm = null;
                 if (isMemoryResident)
                 {
+                    ulong beginningOfHeader = (ulong)read.BaseStream.Position;
                     ulong compressedSize = ReadUIntVersionAware(read);
                     ulong uncompressedSize = ReadUIntVersionAware(read);
-                    // TODO is 8 correct?
-                    mrm = new RDAMemoryResidentHelper((ulong)read.BaseStream.Position - 8 - blockInfo.directorySize - compressedSize, uncompressedSize, compressedSize, read.BaseStream, blockInfo, fileHeader.version);
+                    mrm = new RDAMemoryResidentHelper(beginningOfHeader - blockInfo.directorySize - compressedSize, uncompressedSize, compressedSize, read.BaseStream, blockInfo, fileHeader.version);
                 }
 
                 uint dirEntrySize = DirEntry.GetSize(fileHeader.version);
