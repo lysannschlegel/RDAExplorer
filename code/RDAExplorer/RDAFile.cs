@@ -80,7 +80,7 @@ namespace RDAExplorer
             rdaFile.Offset = dir.offset;
             rdaFile.UncompressedSize = dir.filesize;
             rdaFile.CompressedSize = dir.compressed;
-            rdaFile.TimeStamp = DateTimeExtension.FromTimeStamp((int)dir.timestamp);
+            rdaFile.TimeStamp = DateTimeExtension.FromTimeStamp(dir.timestamp);
             rdaFile.BinaryFile = mrm == null ? reader : new BinaryReader(mrm.Data);
             return rdaFile;
         }
