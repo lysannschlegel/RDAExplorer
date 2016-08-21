@@ -1,0 +1,19 @@
+{
+  "version": "0.2.1",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "System.Console": "4.0.0",
+    "System.Diagnostics.Process": "4.1.0",
+    "System.Runtime.InteropServices": "4.1.0",
+    "NDesk.Options": {
+      "target": "project"
+    }
+  },
+  "frameworks": {
+    "netstandard1.5": {
+      "imports": "dnxcore50"
+    }
+  }
+}

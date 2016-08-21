@@ -1,0 +1,27 @@
+{
+  "version": "0.2.1",
+  "buildOptions": {
+    "debugType": "portable",
+    "define": [
+      "LINQ",
+      "NDESK_OPTIONS"
+    ]
+  },
+  "dependencies": {
+    "System.ComponentModel.TypeConverter": "4.1.0",
+    "System.Linq": "4.1.0",
+    "System.ObjectModel": "4.0.12",
+    "System.Runtime.Extensions": "4.1.0",
+    "System.Text.RegularExpressions": "4.1.0"
+  },
+  "frameworks": {
+    "netstandard1.5": {
+      "imports": "dnxcore50",
+      "buildOptions": {
+          "define": [
+              "NETSTANDARD"
+          ]
+      }
+    }
+  }
+}
