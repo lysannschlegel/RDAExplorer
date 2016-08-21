@@ -1,0 +1,3 @@
+[submodule "lib/AnnoRDA"]
+	path = lib/AnnoRDA
+	url = git@bitbucket.org:lysannschlegel/annorda.git
