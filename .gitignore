@@ -3,6 +3,7 @@
 obj
 bin
 *.csproj.user
+*.xproj.user
 
 /orig
 /data2070
