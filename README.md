@@ -14,7 +14,7 @@ If you are a programmer, you can find more information [in the wiki](../../wiki/
 
 # License
 
-See LICENSE.txt file.
+See LICENSE.txt or COPYING file in the respective subdirectories.
 
 This project is not affiliated in any way with Ubisoft.<br />
 Anno 2070, Anno 2205, Ubisoft and the Ubisoft logo are trademarks of Ubisoft Entertainment in the US and/or other countries. Anno, Blue Byte and the Blue Byte logo are trademarks of Ubisoft GmbH in the US and/or other countries. 
