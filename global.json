@@ -1,0 +1,7 @@
+{
+  "projects": [
+    "lib",
+    "lib/AnnoRDA",
+    "src"
+  ]
+}
