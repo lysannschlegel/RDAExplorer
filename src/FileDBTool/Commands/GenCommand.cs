@@ -25,7 +25,7 @@ namespace RDAExplorer.FileDBTool.Commands
             }
 
             using (var outputStream = new System.IO.FileStream(this.outputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
-                using (var writer = new RDAExplorer.FileDBTool.Writer.FileDBWriter(outputStream, false)) {
+                using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
                     writer.WriteFileDB(fileSystem, remainingArguments);
                 }
             }

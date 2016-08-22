@@ -1,7 +1,7 @@
 using System.IO;
 
-using RDAExplorer.FileDBTool.Reader;
-using RDAExplorer.FileDBTool.Structs;
+using AnnoRDA.FileDB.Reader;
+using AnnoRDA.FileDB.Structs;
 
 namespace RDAExplorer.FileDBTool.Commands
 {
