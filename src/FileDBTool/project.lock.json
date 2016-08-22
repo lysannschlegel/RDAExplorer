@@ -2156,6 +2156,20 @@
           "netstandard1.5/AnnoRDA.dll": {}
         }
       },
+      "AnnoRDA.FileDB/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "AnnoRDA": "(, )",
+          "NETStandard.Library": "1.6.0"
+        },
+        "compile": {
+          "netstandard1.5/AnnoRDA.FileDB.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/AnnoRDA.FileDB.dll": {}
+        }
+      },
       "ManyConsole/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.5",
@@ -2195,6 +2209,19 @@
         },
         "runtime": {
           "net45/AnnoRDA.dll": {}
+        }
+      },
+      "AnnoRDA.FileDB/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.5",
+        "dependencies": {
+          "AnnoRDA": "(, )"
+        },
+        "compile": {
+          "net45/AnnoRDA.FileDB.dll": {}
+        },
+        "runtime": {
+          "net45/AnnoRDA.FileDB.dll": {}
         }
       },
       "ManyConsole/1.0.0": {
@@ -7020,6 +7047,11 @@
       "path": "../../lib/AnnoRDA/AnnoRDA/project.json",
       "msbuildProject": "../../lib/AnnoRDA/AnnoRDA/AnnoRDA.xproj"
     },
+    "AnnoRDA.FileDB/1.0.0": {
+      "type": "project",
+      "path": "../../lib/AnnoRDA/AnnoRDA.FileDB/project.json",
+      "msbuildProject": "../../lib/AnnoRDA/AnnoRDA.FileDB/AnnoRDA.FileDB.xproj"
+    },
     "ManyConsole/1.0.0": {
       "type": "project",
       "path": "../../lib/ManyConsole/project.json",
@@ -7034,6 +7066,7 @@
   "projectFileDependencyGroups": {
     "": [
       "AnnoRDA",
+      "AnnoRDA.FileDB",
       "ManyConsole"
     ],
     ".NETCoreApp,Version=v1.0": [
