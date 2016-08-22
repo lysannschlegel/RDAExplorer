@@ -5,6 +5,5 @@ bin
 *.csproj.user
 *.xproj.user
 
-/orig
-/data2070
-/data2205
+# build output
+/build
