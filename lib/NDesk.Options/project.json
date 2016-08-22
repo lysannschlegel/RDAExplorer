@@ -7,21 +7,18 @@
       "NDESK_OPTIONS"
     ]
   },
-  "dependencies": {
-    "System.ComponentModel.TypeConverter": "4.1.0",
-    "System.Linq": "4.1.0",
-    "System.ObjectModel": "4.0.12",
-    "System.Runtime.Extensions": "4.1.0",
-    "System.Text.RegularExpressions": "4.1.0"
-  },
   "frameworks": {
     "netstandard1.5": {
-      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+		"System.ComponentModel.TypeConverter": "4.1.0"
+	  },
       "buildOptions": {
-          "define": [
-              "NETSTANDARD"
-          ]
+        "define": [
+          "NETSTANDARD"
+        ]
       }
-    }
+    },
+    "net45": {},
   }
 }
