@@ -15,7 +15,7 @@ namespace RDAExplorer.FileDBTool.Commands
             IsCommand("gen", "Generate file.db from RDA files");
             HasLongDescription("Generate file.db to standard output from RDA files given as parameters.");
 
-            AllowsAnyAdditionalArguments("The RDA files to include in the file.db index.");
+            AllowsAnyAdditionalArguments("[data0.rda [data1.rda [...]]]");
 
             HasRequiredOption("output|o=", "The output file name", (value) => { this.outputFileName = value; });
         }

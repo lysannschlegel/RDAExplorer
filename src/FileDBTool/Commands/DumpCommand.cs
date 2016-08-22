@@ -12,7 +12,7 @@ namespace RDAExplorer.FileDBTool.Commands
             IsCommand("dump", "Dump file.db");
             HasLongDescription("Dump contents of a file.db to standard output.");
 
-            HasAdditionalArguments(1, "The file.db to process");
+            HasAdditionalArguments(1, " file.db");
         }
 
         public override int Run(string[] remainingArguments)
