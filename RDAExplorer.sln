@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDAExplorer", "src\RDAExplo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDAExplorerGUI", "src\RDAExplorerGUI\RDAExplorerGUI.csproj", "{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AnnoRDA.Tests", "lib\AnnoRDA\AnnoRDA.Tests\AnnoRDA.Tests.xproj", "{BE14529F-9793-4058-8DB8-0A10E3DC6D7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B1A9A09-E799-467C-A5C9-8BDB9C7D6320}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE14529F-9793-4058-8DB8-0A10E3DC6D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE14529F-9793-4058-8DB8-0A10E3DC6D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE14529F-9793-4058-8DB8-0A10E3DC6D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE14529F-9793-4058-8DB8-0A10E3DC6D7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
