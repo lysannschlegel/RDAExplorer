@@ -2160,7 +2160,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v1.5",
         "dependencies": {
-          "NDesk.Options": "1.0.0",
+          "NDesk.Options": "(, )",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
         },
@@ -2201,7 +2201,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.5",
         "dependencies": {
-          "NDesk.Options": "1.0.0"
+          "NDesk.Options": "(, )"
         },
         "compile": {
           "net45/ManyConsole.dll": {}
