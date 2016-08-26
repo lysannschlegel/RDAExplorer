@@ -1,6 +1,7 @@
 ﻿using FileDBGenerator.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace FileDBGenerator
@@ -17,7 +18,7 @@ namespace FileDBGenerator
 
         private void textBox_SelectRDAFiles_LostFocus(object sender, RoutedEventArgs e)
         {
-            this.SelectRDAFilesFolder(this.textBox_SelectRDAFiles.Text);
+            this.SelectRDAFilesFolder(((System.Windows.Controls.TextBox)sender).Text);
         }
 
         private void button_SelectRDAFiles_Click(object sender, RoutedEventArgs e)
@@ -50,7 +51,7 @@ namespace FileDBGenerator
 
         private void button_RDAFiles_MoveUp_Click(object sender, RoutedEventArgs e)
         {
-            int index = this.listView_RDAFiles.SelectedIndex;
+            int index = this.viewModel.RDAFileListSelectedIndex;
             if (index > 0) {
                 viewModel.RDAFileList.Items.Move(index, index - 1);
             }
@@ -58,7 +59,7 @@ namespace FileDBGenerator
 
         private void button_RDAFiles_MoveDown_Click(object sender, RoutedEventArgs e)
         {
-            int index = this.listView_RDAFiles.SelectedIndex;
+            int index = this.viewModel.RDAFileListSelectedIndex;
             if (index > -1 && index + 1 < viewModel.RDAFileList.Items.Count) {
                 viewModel.RDAFileList.Items.Move(index, index + 1);
             }
@@ -71,29 +72,59 @@ namespace FileDBGenerator
             dialog.DefaultFileName = "file.db";
             dialog.Filters.Add(new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter("Anno 2205 File Index", "*.db"));
             if (dialog.ShowDialog(this) == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok) {
-                this.textBox_SelectOutputFile.Text = dialog.FileName;
+                this.viewModel.OutputFileName = dialog.FileName;
             }
         }
 
         private async void button_Generate_Click(object sender, RoutedEventArgs e)
         {
+            this.viewModel.IsGenerating = true;
+
+            ICollection<RDAFileListItem> enabledItems = viewModel.RDAFileList.Items.Where((item) => item.IsEnabled).ToList();
+
+            int numSteps = enabledItems.Count * 2; // reading
+            numSteps += 1; // writing
+
+            this.statusBar_progressBar_Progress.Minimum = 0;
+            this.statusBar_progressBar_Progress.Maximum = numSteps;
+            this.statusBar_progressBar_Progress.Value = 0;
+
             var archiveFiles = new AnnoRDA.FileDB.Writer.ArchiveFileMap();
             var fileSystem = new AnnoRDA.FileSystem();
             var fileLoader = new AnnoRDA.Loader.ContainerFileLoader();
 
-            foreach (var rdaFile in viewModel.RDAFileList.Items) {
-                if (rdaFile.IsEnabled) {
-                    archiveFiles.Add(rdaFile.LoadPath, rdaFile.Name);
-                    var containerFileSystem = await fileLoader.Load(rdaFile.LoadPath);
-                    await fileSystem.OverwriteWith(containerFileSystem, System.Threading.CancellationToken.None);
-                }
+            foreach (var rdaFile in enabledItems) {
+                this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}", rdaFile.Name);
+                archiveFiles.Add(rdaFile.LoadPath, rdaFile.Name);
+
+                var progress = new System.Progress<string>((string fileName) => {
+                    this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}: {1}", rdaFile.Name, fileName);
+                });
+                var containerFileSystem = await Task.Run(() => fileLoader.Load(rdaFile.LoadPath, progress, System.Threading.CancellationToken.None));
+                this.statusBar_progressBar_Progress.Value += 1;
+
+                this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}", rdaFile.Name);
+                await Task.Run(() => fileSystem.OverwriteWith(containerFileSystem, null, System.Threading.CancellationToken.None));
+                this.statusBar_progressBar_Progress.Value += 1;
             }
 
-            using (var outputStream = new System.IO.FileStream(this.textBox_SelectOutputFile.Text, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
+            this.statusBar_textBlock_Message.Text = "Writing...";
+
+            using (var outputStream = new System.IO.FileStream(this.viewModel.OutputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
                 using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                   await writer.WriteFileDB(fileSystem, archiveFiles);
+                   await Task.Run(() => writer.WriteFileDB(fileSystem, archiveFiles));
                 }
             }
+            this.statusBar_progressBar_Progress.Value += 1;
+
+            this.statusBar_textBlock_Message.Text = "Done";
+
+            this.viewModel.IsGenerating = false;
+        }
+
+        private void statusBar_button_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO
         }
     }
 }
