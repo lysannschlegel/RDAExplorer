@@ -9,6 +9,7 @@ namespace FileDBGenerator
     public partial class MainWindow : Window
     {
         MainWindowViewModel viewModel = new MainWindowViewModel();
+        System.Threading.CancellationTokenSource cancellationTokenSource = null;
 
         public MainWindow()
         {
@@ -78,6 +79,7 @@ namespace FileDBGenerator
 
         private async void button_Generate_Click(object sender, RoutedEventArgs e)
         {
+            this.cancellationTokenSource = new System.Threading.CancellationTokenSource();
             this.viewModel.IsGenerating = true;
 
             ICollection<RDAFileListItem> enabledItems = viewModel.RDAFileList.Items.Where((item) => item.IsEnabled).ToList();
@@ -93,38 +95,46 @@ namespace FileDBGenerator
             var fileSystem = new AnnoRDA.FileSystem();
             var fileLoader = new AnnoRDA.Loader.ContainerFileLoader();
 
-            foreach (var rdaFile in enabledItems) {
-                this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}", rdaFile.Name);
-                archiveFiles.Add(rdaFile.LoadPath, rdaFile.Name);
+            try {
+                foreach (var rdaFile in enabledItems) {
+                    this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}", rdaFile.Name);
+                    archiveFiles.Add(rdaFile.LoadPath, rdaFile.Name);
 
-                var progress = new System.Progress<string>((string fileName) => {
-                    this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}: {1}", rdaFile.Name, fileName);
-                });
-                var containerFileSystem = await Task.Run(() => fileLoader.Load(rdaFile.LoadPath, progress, System.Threading.CancellationToken.None));
-                this.statusBar_progressBar_Progress.Value += 1;
+                    var progress = new System.Progress<string>((string fileName) => {
+                        this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}: {1}", rdaFile.Name, fileName);
+                    });
+                    var containerFileSystem = await Task.Run(() => fileLoader.Load(rdaFile.LoadPath, progress, this.cancellationTokenSource.Token));
+                    this.statusBar_progressBar_Progress.Value += 1;
 
-                this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}", rdaFile.Name);
-                await Task.Run(() => fileSystem.OverwriteWith(containerFileSystem, null, System.Threading.CancellationToken.None));
-                this.statusBar_progressBar_Progress.Value += 1;
-            }
-
-            this.statusBar_textBlock_Message.Text = "Writing...";
-
-            using (var outputStream = new System.IO.FileStream(this.viewModel.OutputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
-                using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                   await Task.Run(() => writer.WriteFileDB(fileSystem, archiveFiles));
+                    this.statusBar_textBlock_Message.Text = System.String.Format("Loading {0}", rdaFile.Name);
+                    await Task.Run(() => fileSystem.OverwriteWith(containerFileSystem, null, this.cancellationTokenSource.Token));
+                    this.statusBar_progressBar_Progress.Value += 1;
                 }
+
+                this.statusBar_textBlock_Message.Text = "Writing...";
+
+                using (var outputStream = new System.IO.FileStream(this.viewModel.OutputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
+                    using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
+                        await Task.Run(() => writer.WriteFileDB(fileSystem, archiveFiles));
+                    }
+                }
+                this.statusBar_progressBar_Progress.Value += 1;
+
+                this.statusBar_textBlock_Message.Text = "Done";
+
+            } catch(System.OperationCanceledException) {
+                this.statusBar_textBlock_Message.Text = "Canceled";
+
+            } finally {
+                this.viewModel.IsGenerating = false;
+                this.cancellationTokenSource.Dispose();
+                this.cancellationTokenSource = null;
             }
-            this.statusBar_progressBar_Progress.Value += 1;
-
-            this.statusBar_textBlock_Message.Text = "Done";
-
-            this.viewModel.IsGenerating = false;
         }
 
         private void statusBar_button_Cancel_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
+            this.cancellationTokenSource.Cancel();
         }
     }
 }
