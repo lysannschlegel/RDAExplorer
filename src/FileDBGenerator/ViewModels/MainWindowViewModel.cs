@@ -83,6 +83,17 @@ namespace FileDBGenerator.ViewModels
                        this.OutputFileName != "";
         } }
 
+        private bool isGenerating = false;
+        public bool IsGenerating {
+            get {
+                return this.isGenerating;
+            }
+            set {
+                this.isGenerating = value;
+                this.NotifyPropertyChanged("IsGenerating");
+            }
+        }
+
         public MainWindowViewModel()
         {
             this.RDAFileList = new RDAFileList();

@@ -24,21 +24,18 @@ namespace RDAExplorer.FileDBTool.Commands
 
             if (remainingArguments.Length == 1 && this.PathIsDirectory(remainingArguments[0])) {
                 var directoryLoader = new AnnoRDA.Loader.ContainerDirectoryLoader();
-                var loadTask = directoryLoader.Load(remainingArguments[0], System.Threading.CancellationToken.None);
-                loadTask.RunSynchronously();
+                var loadResult = directoryLoader.Load(remainingArguments[0], System.Threading.CancellationToken.None);
 
-                fileSystem = loadTask.Result.FileSystem;
-                foreach (string path in loadTask.Result.ContainerPaths) {
+                fileSystem = loadResult.FileSystem;
+                foreach (string path in loadResult.ContainerPaths) {
                     archiveFiles.Add(path, path);
                 }
             } else {
                 fileSystem = new AnnoRDA.FileSystem();
                 var fileLoader = new AnnoRDA.Loader.ContainerFileLoader();
                 foreach (var rdaFileName in remainingArguments) {
-                    var loadTask = fileLoader.Load(rdaFileName);
-                    loadTask.RunSynchronously();
-                    var overwritetask = fileSystem.OverwriteWith(loadTask.Result, System.Threading.CancellationToken.None);
-                    overwritetask.RunSynchronously();
+                    var loadedFS = fileLoader.Load(rdaFileName);
+                    fileSystem.OverwriteWith(loadedFS, null, System.Threading.CancellationToken.None);
 
                     archiveFiles.Add(rdaFileName, rdaFileName);
                 }
@@ -46,8 +43,7 @@ namespace RDAExplorer.FileDBTool.Commands
 
             using (var outputStream = new System.IO.FileStream(this.outputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
                 using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                    var writeTask = writer.WriteFileDB(fileSystem, archiveFiles);
-                    writeTask.RunSynchronously();
+                    writer.WriteFileDB(fileSystem, archiveFiles);
                 }
             }
 

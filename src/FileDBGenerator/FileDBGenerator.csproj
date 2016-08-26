@@ -73,6 +73,8 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\RDAFileList.cs" />
     <Compile Include="Windows\Data\BindingProxy.cs" />
+    <Compile Include="Windows\Data\InvertBooleanConverter.cs" />
+    <Compile Include="Windows\Data\VisibilityConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
