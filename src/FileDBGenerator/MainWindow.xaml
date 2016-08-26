@@ -7,7 +7,7 @@
         xmlns:FileDBGenerator_Windows_Data="clr-namespace:FileDBGenerator.Windows.Data"
         xmlns:ViewModels="clr-namespace:FileDBGenerator.ViewModels"
         mc:Ignorable="d"
-        Title="file.db Generator" Height="350" Width="525" ResizeMode="CanMinimize"
+        Title="file.db Generator" Height="350" Width="570" ResizeMode="CanMinimize"
         d:DataContext="{d:DesignInstance Type=ViewModels:MockMainWindowViewModel, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <FileDBGenerator_Windows_Data:InvertBooleanConverter x:Key="InvertBooleanConverter" />
@@ -39,7 +39,7 @@
 
         <Grid DockPanel.Dock="Top" Margin="7" IsEnabled="{Binding IsGenerating, Converter={StaticResource InvertBooleanConverter}}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="140" />
                 <ColumnDefinition Width="4" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="4" />
@@ -56,7 +56,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Content="RDA Files" />
+            <Label Grid.Row="0" Grid.Column="0" Content="RDA Files (maindata)" />
             <TextBox Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center"
                      LostFocus="textBox_SelectRDAFiles_LostFocus"
                      Text="{Binding Path=RDAFilesFolder, UpdateSourceTrigger=PropertyChanged}"/>
@@ -109,7 +109,7 @@
                         Click="button_RDAFiles_MoveDown_Click" />
             </Grid>
 
-            <Label Grid.Row="4" Grid.Column="0" Content="Output File" />
+            <Label Grid.Row="4" Grid.Column="0" Content="Output File (file.db)" />
             <TextBox Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center"
                      Text="{Binding Path=OutputFileName, UpdateSourceTrigger=PropertyChanged}" />
             <Button Grid.Row="4" Grid.Column="4" Content="..."
