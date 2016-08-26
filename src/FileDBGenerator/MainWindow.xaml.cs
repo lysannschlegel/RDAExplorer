@@ -15,6 +15,37 @@ namespace FileDBGenerator
         {
             InitializeComponent();
             this.DataContext = this.viewModel;
+
+            this.viewModel.RDAFileList.Items.CollectionChanged += ViewModel_RDAFileList_Items_CollectionChanged;
+            this.viewModel.PropertyChanged += ViewModel_PropertyChanged;
+            this.UpdateGuildingMessage();
+        }
+
+        private void UpdateGuildingMessage()
+        {
+            this.statusBar_textBlock_Message.Text = this.GetGuidingMessage();
+        }
+        private string GetGuidingMessage()
+        {
+            if (this.viewModel.RDAFileList.Items.Count() == 0) {
+                return @"Select the directory containing the RDA files to start.";
+            } else if (this.viewModel.RDAFileList.Items.Count((RDAFileListItem item) => item.IsEnabled) == 0) {
+                return @"Enable at least one RDA file.";
+            } else if (this.viewModel.OutputFileName == "") {
+                return @"Specify the outout file name.";
+            } else {
+                return @"Click Generate to start the process.";
+            }
+        }
+        private void ViewModel_RDAFileList_Items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            this.UpdateGuildingMessage();
+        }
+        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "OutputFileName") {
+                this.UpdateGuildingMessage();
+            }
         }
 
         private void textBox_SelectRDAFiles_LostFocus(object sender, RoutedEventArgs e)
@@ -26,15 +57,31 @@ namespace FileDBGenerator
         {
             var dialog = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
             dialog.IsFolderPicker = true;
-            dialog.InitialDirectory = @"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\games\Anno 2205\maindata";
+            dialog.InitialDirectory = this.FindRDAFilesInitialDirectory();
             if (dialog.ShowDialog(this) == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok) {
                 this.SelectRDAFilesFolder(dialog.FileName);
             }
         }
 
+        private string FindRDAFilesInitialDirectory()
+        {
+            string path = @"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\games\Anno 2205\maindata";
+            if (System.IO.Directory.Exists(path)) {
+                return path;
+            }
+            path = @"C:\Program Files\Ubisoft\Ubisoft Game Launcher\games\Anno 2205\maindata";
+            if (System.IO.Directory.Exists(path)) {
+                return path;
+            }
+            return null;
+        }
+
         private void SelectRDAFilesFolder(string path)
         {
-            // TODO check if folder exists and is a folder
+            if (!System.IO.Directory.Exists(path)) {
+                MessageBox.Show(this, "The given path is not a directory.", "Error");
+                return;
+            }
 
             this.viewModel.RDAFilesFolder = path;
             System.Uri pathUri = new System.Uri(path);
