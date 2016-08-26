@@ -75,7 +75,7 @@ namespace FileDBGenerator
             }
         }
 
-        private void button_Generate_Click(object sender, RoutedEventArgs e)
+        private async void button_Generate_Click(object sender, RoutedEventArgs e)
         {
             var archiveFiles = new AnnoRDA.FileDB.Writer.ArchiveFileMap();
             var fileSystem = new AnnoRDA.FileSystem();
@@ -84,14 +84,14 @@ namespace FileDBGenerator
             foreach (var rdaFile in viewModel.RDAFileList.Items) {
                 if (rdaFile.IsEnabled) {
                     archiveFiles.Add(rdaFile.LoadPath, rdaFile.Name);
-                    var containerFileSystem = fileLoader.Load(rdaFile.LoadPath);
-                    fileSystem.Merge(containerFileSystem, System.Threading.CancellationToken.None);
+                    var containerFileSystem = await fileLoader.Load(rdaFile.LoadPath);
+                    await fileSystem.OverwriteWith(containerFileSystem, System.Threading.CancellationToken.None);
                 }
             }
 
             using (var outputStream = new System.IO.FileStream(this.textBox_SelectOutputFile.Text, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
                 using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                    writer.WriteFileDB(fileSystem, archiveFiles);
+                   await writer.WriteFileDB(fileSystem, archiveFiles);
                 }
             }
         }

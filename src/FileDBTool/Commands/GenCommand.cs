@@ -24,24 +24,30 @@ namespace RDAExplorer.FileDBTool.Commands
 
             if (remainingArguments.Length == 1 && this.PathIsDirectory(remainingArguments[0])) {
                 var directoryLoader = new AnnoRDA.Loader.ContainerDirectoryLoader();
-                IEnumerable<string> containerPaths;
-                fileSystem = directoryLoader.Load(remainingArguments[0], System.Threading.CancellationToken.None, out containerPaths);
-                foreach (string path in containerPaths) {
+                var loadTask = directoryLoader.Load(remainingArguments[0], System.Threading.CancellationToken.None);
+                loadTask.RunSynchronously();
+
+                fileSystem = loadTask.Result.FileSystem;
+                foreach (string path in loadTask.Result.ContainerPaths) {
                     archiveFiles.Add(path, path);
                 }
             } else {
                 fileSystem = new AnnoRDA.FileSystem();
                 var fileLoader = new AnnoRDA.Loader.ContainerFileLoader();
                 foreach (var rdaFileName in remainingArguments) {
+                    var loadTask = fileLoader.Load(rdaFileName);
+                    loadTask.RunSynchronously();
+                    var overwritetask = fileSystem.OverwriteWith(loadTask.Result, System.Threading.CancellationToken.None);
+                    overwritetask.RunSynchronously();
+
                     archiveFiles.Add(rdaFileName, rdaFileName);
-                    var containerFileSystem = fileLoader.Load(rdaFileName);
-                    fileSystem.Merge(containerFileSystem, System.Threading.CancellationToken.None);
                 }
             }
 
             using (var outputStream = new System.IO.FileStream(this.outputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
                 using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                    writer.WriteFileDB(fileSystem, archiveFiles);
+                    var writeTask = writer.WriteFileDB(fileSystem, archiveFiles);
+                    writeTask.RunSynchronously();
                 }
             }
 
