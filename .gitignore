@@ -4,6 +4,7 @@ obj
 bin
 *.csproj.user
 *.xproj.user
+/packages
 
 # build output
 /build
