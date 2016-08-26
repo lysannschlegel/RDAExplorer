@@ -7,13 +7,12 @@ $root="$PSScriptRoot/.."
 
 $files = New-Object System.Collections.ArrayList
 
-# build FileDBTool
-dotnet restore "$root"
-if (!$?) { throw "Failed to install dependencies for FileDBTool" }
-dotnet publish "$root/src/FileDBTool" --configuration Release --framework net45
-if (!$?) { throw "Failed to build FileDBTool" }
-$files.AddRange(("$root/src/FileDBTool/bin/Release/net45/win7-x64/publish/*.exe", `
-                 "$root/src/FileDBTool/bin/Release/net45/win7-x64/publish/*.dll"))
+# build FileDBGenerator
+msbuild "$root/RDAExplorer.sln" /target:"FileDBGenerator" /property:Configuration=Release
+if (!$?) { throw "Failed to build FileDBGenerator" }
+$files.AddRange(("$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe", `
+                 "$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe.config", `
+                 "$root/src/FileDBGenerator/bin/Release/*.dll"))
 
 # build RDAExplorerGUI
 msbuild "$root/RDAExplorer.sln" /target:"RDAExplorerGUI" /property:Configuration=Release
