@@ -21,6 +21,12 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AnnoRDA.Tests", "lib\AnnoRD
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AnnoRDA.FileDB", "lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.xproj", "{2CEBA3E5-19A7-428E-BEA6-65BE4B3DBCD4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileDBGenerator", "src\FileDBGenerator\FileDBGenerator.csproj", "{6CA8BB38-4BFA-4289-96ED-9979203DDFDF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E83CECB-5421-4F96-A947-60CF1F875C61} = {1E83CECB-5421-4F96-A947-60CF1F875C61}
+		{2CEBA3E5-19A7-428E-BEA6-65BE4B3DBCD4} = {2CEBA3E5-19A7-428E-BEA6-65BE4B3DBCD4}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +69,10 @@ Global
 		{2CEBA3E5-19A7-428E-BEA6-65BE4B3DBCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CEBA3E5-19A7-428E-BEA6-65BE4B3DBCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CEBA3E5-19A7-428E-BEA6-65BE4B3DBCD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CA8BB38-4BFA-4289-96ED-9979203DDFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA8BB38-4BFA-4289-96ED-9979203DDFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA8BB38-4BFA-4289-96ED-9979203DDFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA8BB38-4BFA-4289-96ED-9979203DDFDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
