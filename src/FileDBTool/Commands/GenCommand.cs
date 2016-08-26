@@ -19,19 +19,21 @@ namespace RDAExplorer.FileDBTool.Commands
 
         public override int Run(string[] remainingArguments)
         {
-            IList<string> containerPaths;
+            var archiveFiles = new AnnoRDA.FileDB.Writer.ArchiveFileMap();
             AnnoRDA.FileSystem fileSystem;
 
             if (remainingArguments.Length == 1 && this.PathIsDirectory(remainingArguments[0])) {
                 var directoryLoader = new AnnoRDA.Loader.ContainerDirectoryLoader();
-                IEnumerable<string> enumerableContainerPaths;
-                fileSystem = directoryLoader.Load(remainingArguments[0], System.Threading.CancellationToken.None, out enumerableContainerPaths);
-                containerPaths = enumerableContainerPaths.ToArray();
+                IEnumerable<string> containerPaths;
+                fileSystem = directoryLoader.Load(remainingArguments[0], System.Threading.CancellationToken.None, out containerPaths);
+                foreach (string path in containerPaths) {
+                    archiveFiles.Add(path, path);
+                }
             } else {
-                containerPaths = remainingArguments;
                 fileSystem = new AnnoRDA.FileSystem();
                 var fileLoader = new AnnoRDA.Loader.ContainerFileLoader();
-                foreach (var rdaFileName in containerPaths) {
+                foreach (var rdaFileName in remainingArguments) {
+                    archiveFiles.Add(rdaFileName, rdaFileName);
                     var containerFileSystem = fileLoader.Load(rdaFileName);
                     fileSystem.Merge(containerFileSystem, System.Threading.CancellationToken.None);
                 }
@@ -39,7 +41,7 @@ namespace RDAExplorer.FileDBTool.Commands
 
             using (var outputStream = new System.IO.FileStream(this.outputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
                 using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                    writer.WriteFileDB(fileSystem, containerPaths);
+                    writer.WriteFileDB(fileSystem, archiveFiles);
                 }
             }
 
