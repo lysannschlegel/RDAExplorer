@@ -4,6 +4,8 @@ $root="$PSScriptRoot/.."
 
 # clean
 & $PSScriptRoot/Clean.ps1
+# copy zlib
+& $PSScriptRoot/Copy-zlib.ps1
 
 $files = New-Object System.Collections.ArrayList
 
