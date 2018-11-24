@@ -105,6 +105,7 @@ namespace RDAExplorerGUI.Misc
             if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
                 return;
             BackgroundWorker wrk = new BackgroundWorker();
+            wrk.WorkerReportsProgress = true;
             MainWindow.CurrentMainWindow.progressBar_Status.Visibility = Visibility.Visible;
             wrk.ProgressChanged += (s, e2) => DispatcherExtension.Dispatch(System.Windows.Application.Current, (() =>
             {
