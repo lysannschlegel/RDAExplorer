@@ -10,14 +10,16 @@ $root="$PSScriptRoot/.."
 $files = New-Object System.Collections.ArrayList
 
 # build FileDBGenerator
-msbuild "$root/RDAExplorer.sln" /target:"FileDBGenerator" /property:Configuration=Release
+dotnet restore src/FileDBGenerator
+msbuild "$root/RDAExplorer.sln" /target:"src\FileDBGenerator" /property:Configuration=Release
 if (!$?) { throw "Failed to build FileDBGenerator" }
 $files.AddRange(("$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe", `
                  "$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe.config", `
                  "$root/src/FileDBGenerator/bin/Release/*.dll"))
 
 # build RDAExplorerGUI
-msbuild "$root/RDAExplorer.sln" /target:"RDAExplorerGUI" /property:Configuration=Release
+dotnet restore src/RDAExplorerGUI
+msbuild "$root/RDAExplorer.sln" /target:"src\RDAExplorerGUI" /property:Configuration=Release
 if (!$?) { throw "Failed to build RDAExplorerGUI" }
 $files.AddRange(("$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe", `
                  "$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe.config", `
