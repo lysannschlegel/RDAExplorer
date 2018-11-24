@@ -13,21 +13,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileDBGenerator", "src\File
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{A9D54492-F176-4DED-AEED-FBF89CD438D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManyConsole", "lib\ManyConsole\ManyConsole.csproj", "{FE2D5BCF-1098-48A4-A6F4-FEBEFA9026D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManyConsole", "lib\ManyConsole\ManyConsole.csproj", "{FE2D5BCF-1098-48A4-A6F4-FEBEFA9026D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDesk.Options", "lib\NDesk.Options\NDesk.Options.csproj", "{9B3FE5F8-D3A5-48D2-9783-2D848902F9DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDesk.Options", "lib\NDesk.Options\NDesk.Options.csproj", "{9B3FE5F8-D3A5-48D2-9783-2D848902F9DF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{22419519-749F-4511-BDC4-FF452ADFF9E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileDBTool", "src\FileDBTool\FileDBTool.csproj", "{0105B731-5545-4C48-979F-D39286C7D008}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileDBTool", "src\FileDBTool\FileDBTool.csproj", "{0105B731-5545-4C48-979F-D39286C7D008}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnnoRDA", "AnnoRDA", "{4DD2AE2C-EA05-4A8C-BA5B-A15FC409A191}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoRDA", "lib\AnnoRDA\AnnoRDA\AnnoRDA.csproj", "{72F528EF-A46D-448A-A856-C4718D6AD57F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnnoRDA", "lib\AnnoRDA\AnnoRDA\AnnoRDA.csproj", "{72F528EF-A46D-448A-A856-C4718D6AD57F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoRDA.FileDB", "lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.csproj", "{7E632388-82B6-46FA-AC73-1758B79391BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnnoRDA.FileDB", "lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.csproj", "{7E632388-82B6-46FA-AC73-1758B79391BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoRDA.Tests", "lib\AnnoRDA\AnnoRDA.Tests\AnnoRDA.Tests.csproj", "{5D34A542-E55E-4FBA-B3D8-26C3BC3244F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnnoRDA.Tests", "lib\AnnoRDA\AnnoRDA.Tests\AnnoRDA.Tests.csproj", "{5D34A542-E55E-4FBA-B3D8-26C3BC3244F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{29388223-B822-4F3A-91AF-96D062AC473B}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\Clean.ps1 = scripts\Clean.ps1
+		scripts\Copy-zlib.ps1 = scripts\Copy-zlib.ps1
+		scripts\Create-Release-Build.ps1 = scripts\Create-Release-Build.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
