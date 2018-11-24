@@ -117,7 +117,7 @@ namespace RDAExplorerGUI.Misc
                 MainWindow.CurrentMainWindow.label_Status.Text = MainWindow.CurrentMainWindow.CurrentReader.rdaFolder.GetAllFiles().Count + " files";
                 MainWindow.CurrentMainWindow.progressBar_Status.Visibility = Visibility.Collapsed;
             }));
-            RDAExplorer.RDAFileExtension.ExtractAll(Folder.GetAllFiles(), folderBrowserDialog.SelectedPath, wrk);
+            wrk.DoWork += (s, e2) => RDAExplorer.RDAFileExtension.ExtractAll(Folder.GetAllFiles(), folderBrowserDialog.SelectedPath, wrk);
             wrk.RunWorkerAsync();
         }
 
