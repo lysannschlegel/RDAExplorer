@@ -36,12 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AnnoRDA">
-      <HintPath>..\..\lib\AnnoRDA\AnnoRDA\bin\$(Configuration)\net45\AnnoRDA.dll</HintPath>
-    </Reference>
-    <Reference Include="AnnoRDA.FileDB">
-      <HintPath>..\..\lib\AnnoRDA\AnnoRDA.FileDB\bin\$(Configuration)\net45\AnnoRDA.FileDB.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
       <Private>True</Private>
@@ -116,6 +110,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.csproj">
+      <Project>{7e632388-82b6-46fa-ac73-1758b79391bd}</Project>
+      <Name>AnnoRDA.FileDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA\AnnoRDA.csproj">
+      <Project>{72f528ef-a46d-448a-a856-c4718d6ad57f}</Project>
+      <Name>AnnoRDA</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

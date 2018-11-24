@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.0;net45</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    <AssemblyName>FileDBTool</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>FileDBTool</PackageId>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\ManyConsole\ManyConsole.csproj" />
+    <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA\AnnoRDA.csproj" />
+    <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>
