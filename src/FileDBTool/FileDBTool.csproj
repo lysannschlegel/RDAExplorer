@@ -1,12 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.0;net45</TargetFrameworks>
-    <DebugType>portable</DebugType>
+    <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
     <AssemblyName>FileDBTool</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>FileDBTool</PackageId>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
