@@ -5,8 +5,10 @@ using AnnoRDA.FileDB.Structs;
 
 namespace RDAExplorer.FileDBTool.Commands
 {
-    class DumpFileDBCommand : ManyConsole.ConsoleCommand
+    class DumpFileDBCommand : ManyConsole.ConsoleCommand, IContentReaderDelegate
     {
+        private int level;
+
         public DumpFileDBCommand()
         {
             IsCommand("dump", "Dump file.db");
@@ -17,46 +19,43 @@ namespace RDAExplorer.FileDBTool.Commands
 
         public override int Run(string[] remainingArguments)
         {
+            this.level = 0;
+
             using (var fileStream = new FileStream(remainingArguments[0], FileMode.Open, FileAccess.Read)) {
                 using (var reader = new DBReader(fileStream)) {
-                    Node content = reader.ReadFile();
-                    this.Dump(content, 0);
+                    reader.ReadFile(this);
                 }
             }
             return 0;
         }
 
-        public void Dump(Node node, int level)
+        void IContentReaderDelegate.OnStructureStart(Tag tag)
         {
-            switch (node.Tag.Type) {
-                case Tag.TagType.Attribute: {
-                    this.DumpPadding(level);
-                    this.DumpTag(node.Tag, false);
-                    System.Console.Write(": ");
-                    this.DumpAttributeValue(node, true);
-                    break;
-                }
-                case Tag.TagType.StructureStart: {
-                    this.DumpPadding(level);
-                    this.DumpTag(node.Tag, true);
-                    foreach (var child in node.Children) {
-                        this.Dump(child, level + 1);
-                    }
-                    break;
-                }
-                case Tag.TagType.StructureEnd: {
-                    throw new System.FormatException(System.String.Format("Unexpected tag type (StructureEnd) of tag: {0} ({1})", node.Tag.ID, node.Tag.Name));
-                }
-            }
+            this.DumpPadding();
+            this.DumpTag(tag, true);
+
+            this.level += 1;
+        }
+        void IContentReaderDelegate.OnStructureEnd(Tag tag)
+        {
+            this.level -= 1;
         }
 
-        public void DumpPadding(int level)
+        void IContentReaderDelegate.OnAttribute(Tag tag, byte[] value)
         {
-            string padding = new System.String(' ', level * 2);
+            this.DumpPadding();
+            this.DumpTag(tag, false);
+            System.Console.Write(": ");
+            this.DumpAttributeValue(tag, value, true);
+        }
+
+        private void DumpPadding()
+        {
+            string padding = new System.String(' ', this.level * 2);
             System.Console.Out.Write(padding);
         }
 
-        public void DumpTag(Tag tag, bool writeNewline)
+        private void DumpTag(Tag tag, bool writeNewline)
         {
             System.Console.Out.Write(tag.ID.ToString("X4") + " " + tag.Name);
             if (writeNewline) {
@@ -64,71 +63,36 @@ namespace RDAExplorer.FileDBTool.Commands
             }
         }
 
-        public void DumpAttributeValue(Node node, bool writeNewline)
+        private void DumpAttributeValue(Tag tag, byte[] value, bool writeNewline)
         {
-            switch (node.Tag.Name)
+            switch (tag.Name)
             {
                 case Tags.BuiltinTags.Names.String:
                 case FileSystemTags.Attributes.Names.FileName:
+                case FileSystemTags.Attributes.Names.LastArchiveFile:
                 {
-                    System.Console.Out.Write(node.ValueToString());
+                    DumpStringValue(value);
                     break;
                 }
                 case FileSystemTags.Attributes.Names.ArchiveFileIndex:
+                case FileSystemTags.Attributes.Names.Flags:
+                case FileSystemTags.Attributes.Names.ResidentBufferIndex:
+                case FileSystemTags.Attributes.Names.Size:
                 {
-                    System.Console.Out.Write(node.ValueToUInt32());
+                    DumpUInt32Value(value);
                     break;
                 }
                 case FileSystemTags.Attributes.Names.Position:
-                {
-                    System.Console.Out.Write(node.ValueToUInt64());
-                    break;
-                }
                 case FileSystemTags.Attributes.Names.CompressedSize:
-                {
-                    System.Console.Out.Write(node.ValueToUInt64());
-                    break;
-                }
                 case FileSystemTags.Attributes.Names.UncompressedSize:
-                {
-                    System.Console.Out.Write(node.ValueToUInt64());
-                    break;
-                }
                 case FileSystemTags.Attributes.Names.ModificationTime:
                 {
-                    System.Console.Out.Write(node.ValueToUInt64());
-                    break;
-                }
-                case FileSystemTags.Attributes.Names.Flags:
-                {
-                    System.Console.Out.Write(node.ValueToUInt32());
-                    break;
-                }
-                case FileSystemTags.Attributes.Names.ResidentBufferIndex:
-                {
-                    System.Console.Out.Write(node.ValueToUInt32());
-                    break;
-                }
-                case FileSystemTags.Attributes.Names.LastArchiveFile:
-                {
-                    System.Console.Out.Write(node.ValueToString());
-                    break;
-                }
-                case FileSystemTags.Attributes.Names.Size:
-                {
-                    System.Console.Out.Write(node.ValueToUInt32());
+                    DumpUInt64Value(value);
                     break;
                 }
                 case FileSystemTags.Attributes.Names.Buffer:
                 {
-                    for (int i = 0; i < node.Value.Length && i < 10; ++i)
-                    {
-                        System.Console.Out.Write(System.String.Format("{0:X2} ", node.Value[i]));
-                    }
-                    if (node.Value.Length > 10)
-                    {
-                        System.Console.Out.Write("...");
-                    }
+                    DumpRawBytes(value);
                     break;
                 }
                 default:
@@ -138,6 +102,30 @@ namespace RDAExplorer.FileDBTool.Commands
             }
             if (writeNewline) {
                 System.Console.Out.WriteLine("");
+            }
+        }
+
+        private void DumpStringValue(byte[] value)
+        {
+            if (value.Length >= 2) {
+                System.Console.Out.Write(System.Text.Encoding.Unicode.GetString(value));
+            }
+        }
+        private void DumpUInt32Value(byte[] value)
+        {
+            System.Console.Out.Write(System.BitConverter.ToUInt32(value, 0));
+        }
+        private void DumpUInt64Value(byte[] value)
+        {
+            System.Console.Out.Write(System.BitConverter.ToUInt64(value, 0));
+        }
+        private void DumpRawBytes(byte[] value)
+        {
+            for (int i = 0; i < value.Length && i < 10; ++i) {
+                System.Console.Out.Write(System.String.Format("{0:X2} ", value[i]));
+            }
+            if (value.Length > 10) {
+                System.Console.Out.Write("...");
             }
         }
     }
