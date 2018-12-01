@@ -161,8 +161,8 @@ namespace FileDBGenerator
                 this.statusBar_textBlock_Message.Text = "Writing...";
 
                 using (var outputStream = new System.IO.FileStream(this.viewModel.OutputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
-                    using (var writer = new AnnoRDA.FileDB.Writer.FileDBWriter(outputStream, false)) {
-                        await Task.Run(() => writer.WriteFileDB(fileSystem, archiveFiles));
+                    using (var writer = new AnnoRDA.FileDB.Writer.FileSystemWriter(outputStream, false)) {
+                        await Task.Run(() => writer.WriteFileSystem(fileSystem, archiveFiles));
                     }
                 }
                 this.statusBar_progressBar_Progress.Value += 1;
