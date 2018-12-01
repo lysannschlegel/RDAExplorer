@@ -18,7 +18,7 @@ namespace RDAExplorer.FileDBTool.Commands
         public override int Run(string[] remainingArguments)
         {
             using (var fileStream = new FileStream(remainingArguments[0], FileMode.Open, FileAccess.Read)) {
-                using (var reader = new FileDBReader(fileStream)) {
+                using (var reader = new DBReader(fileStream)) {
                     Node content = reader.ReadFile();
                     this.Dump(content, 0);
                 }
@@ -66,58 +66,73 @@ namespace RDAExplorer.FileDBTool.Commands
 
         public void DumpAttributeValue(Node node, bool writeNewline)
         {
-            switch (node.Tag.Name) {
-                case "String":
-                case "FileName": {
+            switch (node.Tag.Name)
+            {
+                case Tags.BuiltinTags.Names.String:
+                case FileSystemTags.Attributes.Names.FileName:
+                {
                     System.Console.Out.Write(node.ValueToString());
                     break;
                 }
-                case "ArchiveFileIndex": {
+                case FileSystemTags.Attributes.Names.ArchiveFileIndex:
+                {
                     System.Console.Out.Write(node.ValueToUInt32());
                     break;
                 }
-                case "Position": {
+                case FileSystemTags.Attributes.Names.Position:
+                {
                     System.Console.Out.Write(node.ValueToUInt64());
                     break;
                 }
-                case "CompressedSize": {
+                case FileSystemTags.Attributes.Names.CompressedSize:
+                {
                     System.Console.Out.Write(node.ValueToUInt64());
                     break;
                 }
-                case "UncompressedSize": {
+                case FileSystemTags.Attributes.Names.UncompressedSize:
+                {
                     System.Console.Out.Write(node.ValueToUInt64());
                     break;
                 }
-                case "ModificationTime": {
+                case FileSystemTags.Attributes.Names.ModificationTime:
+                {
                     System.Console.Out.Write(node.ValueToUInt64());
                     break;
                 }
-                case "Flags": {
+                case FileSystemTags.Attributes.Names.Flags:
+                {
                     System.Console.Out.Write(node.ValueToUInt32());
                     break;
                 }
-                case "ResidentBufferIndex": {
+                case FileSystemTags.Attributes.Names.ResidentBufferIndex:
+                {
                     System.Console.Out.Write(node.ValueToUInt32());
                     break;
                 }
-                case "LastArchiveFile": {
+                case FileSystemTags.Attributes.Names.LastArchiveFile:
+                {
                     System.Console.Out.Write(node.ValueToString());
                     break;
                 }
-                case "Size": {
+                case FileSystemTags.Attributes.Names.Size:
+                {
                     System.Console.Out.Write(node.ValueToUInt32());
                     break;
                 }
-                case "Buffer": {
-                    for (int i = 0; i < node.Value.Length && i < 10; ++i) {
+                case FileSystemTags.Attributes.Names.Buffer:
+                {
+                    for (int i = 0; i < node.Value.Length && i < 10; ++i)
+                    {
                         System.Console.Out.Write(System.String.Format("{0:X2} ", node.Value[i]));
                     }
-                    if (node.Value.Length > 10) {
+                    if (node.Value.Length > 10)
+                    {
                         System.Console.Out.Write("...");
                     }
                     break;
                 }
-                default: {
+                default:
+                {
                     throw new System.ArgumentException("node.tag.Name");
                 }
             }
