@@ -41,7 +41,7 @@ namespace RDAExplorer.FileDBTool.Commands
             this.level -= 1;
         }
 
-        void IContentReaderDelegate.OnAttribute(Tag tag, byte[] value)
+        void IContentReaderDelegate.OnAttribute(Tag tag, AttributeValue value)
         {
             this.DumpPadding();
             this.DumpTag(tag, false);
@@ -63,36 +63,39 @@ namespace RDAExplorer.FileDBTool.Commands
             }
         }
 
-        private void DumpAttributeValue(Tag tag, byte[] value, bool writeNewline)
+        private void DumpAttributeValue(Tag tag, AttributeValue value, bool writeNewline)
         {
             switch (tag.Name)
             {
                 case Tags.BuiltinTags.Names.String:
                 case FileSystemTags.Attributes.Names.FileName:
-                case FileSystemTags.Attributes.Names.LastArchiveFile:
-                {
-                    DumpStringValue(value);
+                case FileSystemTags.Attributes.Names.LastArchiveFile: {
+                    System.Console.Out.Write(value.GetUnicodeString());
                     break;
                 }
                 case FileSystemTags.Attributes.Names.ArchiveFileIndex:
                 case FileSystemTags.Attributes.Names.Flags:
                 case FileSystemTags.Attributes.Names.ResidentBufferIndex:
-                case FileSystemTags.Attributes.Names.Size:
-                {
-                    DumpUInt32Value(value);
+                case FileSystemTags.Attributes.Names.Size: {
+                    System.Console.Out.Write(value.GetUInt32());
                     break;
                 }
                 case FileSystemTags.Attributes.Names.Position:
                 case FileSystemTags.Attributes.Names.CompressedSize:
                 case FileSystemTags.Attributes.Names.UncompressedSize:
-                case FileSystemTags.Attributes.Names.ModificationTime:
-                {
-                    DumpUInt64Value(value);
+                case FileSystemTags.Attributes.Names.ModificationTime: {
+                    System.Console.Out.Write(value.GetUInt64());
                     break;
                 }
                 case FileSystemTags.Attributes.Names.Buffer:
                 {
-                    DumpRawBytes(value);
+                    const int numBytesToShow = 10;
+                    for (int i = 0; i < value.Bytes.Length && i < numBytesToShow; ++i) {
+                        System.Console.Out.Write(System.String.Format("{0:X2} ", value.Bytes[i]));
+                    }
+                    if (value.Bytes.Length > numBytesToShow) {
+                        System.Console.Out.Write("...");
+                    }
                     break;
                 }
                 default:
@@ -102,30 +105,6 @@ namespace RDAExplorer.FileDBTool.Commands
             }
             if (writeNewline) {
                 System.Console.Out.WriteLine("");
-            }
-        }
-
-        private void DumpStringValue(byte[] value)
-        {
-            if (value.Length >= 2) {
-                System.Console.Out.Write(System.Text.Encoding.Unicode.GetString(value));
-            }
-        }
-        private void DumpUInt32Value(byte[] value)
-        {
-            System.Console.Out.Write(System.BitConverter.ToUInt32(value, 0));
-        }
-        private void DumpUInt64Value(byte[] value)
-        {
-            System.Console.Out.Write(System.BitConverter.ToUInt64(value, 0));
-        }
-        private void DumpRawBytes(byte[] value)
-        {
-            for (int i = 0; i < value.Length && i < 10; ++i) {
-                System.Console.Out.Write(System.String.Format("{0:X2} ", value[i]));
-            }
-            if (value.Length > 10) {
-                System.Console.Out.Write("...");
             }
         }
     }
