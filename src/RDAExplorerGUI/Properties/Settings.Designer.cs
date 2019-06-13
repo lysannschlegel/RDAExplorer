@@ -82,5 +82,29 @@ namespace RDAExplorerGUI.Properties {
                 this["Window_IsMaximized"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastSelectedPathForExtraction {
+            get {
+                return ((string)(this["LastSelectedPathForExtraction"]));
+            }
+            set {
+                this["LastSelectedPathForExtraction"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SettingsUpgradeNeeded {
+            get {
+                return ((bool)(this["SettingsUpgradeNeeded"]));
+            }
+            set {
+                this["SettingsUpgradeNeeded"] = value;
+            }
+        }
     }
 }

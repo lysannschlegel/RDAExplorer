@@ -39,6 +39,13 @@ namespace RDAExplorerGUI
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             NewFile();
+
+            if (Settings.Default.SettingsUpgradeNeeded)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.SettingsUpgradeNeeded = false;
+                Settings.Default.Save();
+            }
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -125,7 +132,8 @@ namespace RDAExplorerGUI
                 foreach (RDASkippedDataSection skippedBlock in CurrentReader.SkippedDataSections)
                 {
                     string title = skippedBlock.blockInfo.fileCount + " encrypted files";
-                    treeView.Items.Add(new RDASkippedDataSectionTreeViewItem() {
+                    treeView.Items.Add(new RDASkippedDataSectionTreeViewItem()
+                    {
                         Section = skippedBlock,
                         Header = ControlExtension.BuildImageTextblock("pack://application:,,,/Images/Icons/error.png", title)
                     });
@@ -333,8 +341,12 @@ namespace RDAExplorerGUI
         private void archive_ExtractAll_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
+            dlg.SelectedPath = Settings.Default.LastSelectedPathForExtraction;
             if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
+
+            Settings.Default.LastSelectedPathForExtraction = dlg.SelectedPath;//settings are saved when window is closing
+
             BackgroundWorker wrk = new BackgroundWorker();
             wrk.WorkerReportsProgress = true;
             progressBar_Status.Visibility = Visibility.Visible;
@@ -366,8 +378,12 @@ namespace RDAExplorerGUI
         private void archive_ExtractSelected_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
+            dlg.SelectedPath = Settings.Default.LastSelectedPathForExtraction;
             if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
+
+            Settings.Default.LastSelectedPathForExtraction = dlg.SelectedPath;//settings are saved when window is closing
+
             BackgroundWorker wrk = new BackgroundWorker();
             wrk.WorkerReportsProgress = true;
             progressBar_Status.Visibility = Visibility.Visible;
