@@ -1,6 +1,7 @@
 ﻿using AnnoModificationManager4.Misc;
 using AnnoModificationManager4.UserInterface.Misc;
 using RDAExplorer;
+using RDAExplorerGUI.Properties;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -51,10 +52,14 @@ namespace RDAExplorerGUI.Misc
         private void context_Extract_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = Settings.Default.LastSelectedPathForExtraction;
             saveFileDialog.FileName = Path.GetFileName(File.FileName);
             bool? nullable = saveFileDialog.ShowDialog();
             if ((!nullable.GetValueOrDefault() ? 0 : (nullable.HasValue ? 1 : 0)) == 0)
                 return;
+
+            Settings.Default.LastSelectedPathForExtraction = Path.GetDirectoryName(saveFileDialog.FileName); // Settings are saved when the application exits
+
             try
             {
                 File.Extract(saveFileDialog.FileName);

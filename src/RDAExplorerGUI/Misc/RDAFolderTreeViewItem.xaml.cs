@@ -3,6 +3,7 @@ using AnnoModificationManager4.Misc;
 using AnnoModificationManager4.UserInterface.Misc;
 using RDAExplorer;
 using RDAExplorerGUI.Controls;
+using RDAExplorerGUI.Properties;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -102,8 +103,12 @@ namespace RDAExplorerGUI.Misc
         private void context_Extract_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            folderBrowserDialog.SelectedPath = Settings.Default.LastSelectedPathForExtraction;
             if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
                 return;
+
+            Settings.Default.LastSelectedPathForExtraction = folderBrowserDialog.SelectedPath; // Settings are saved when the application exits
+
             BackgroundWorker wrk = new BackgroundWorker();
             wrk.WorkerReportsProgress = true;
             MainWindow.CurrentMainWindow.progressBar_Status.Visibility = Visibility.Visible;
