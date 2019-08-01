@@ -39,13 +39,6 @@ namespace RDAExplorerGUI
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             NewFile();
-
-            if (Settings.Default.SettingsUpgradeNeeded)
-            {
-                Settings.Default.Upgrade();
-                Settings.Default.SettingsUpgradeNeeded = false;
-                Settings.Default.Save();
-            }
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -58,8 +51,10 @@ namespace RDAExplorerGUI
                 Settings.Default.Window_Y = Top;
             }
             Settings.Default.Window_IsMaximized = WindowState == WindowState.Maximized;
-            Settings.Default.Save();
+            //Settings.Default.Save(); // Settings are saved when the application exits
+
             ResetDocument();
+
             try
             {
                 Directory.Delete(DirectoryExtension.GetTempWorkingDirectory(), true);
@@ -345,7 +340,7 @@ namespace RDAExplorerGUI
             if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
-            Settings.Default.LastSelectedPathForExtraction = dlg.SelectedPath;//settings are saved when window is closing
+            Settings.Default.LastSelectedPathForExtraction = dlg.SelectedPath; // Settings are saved when the application exits
 
             BackgroundWorker wrk = new BackgroundWorker();
             wrk.WorkerReportsProgress = true;
@@ -382,7 +377,7 @@ namespace RDAExplorerGUI
             if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
-            Settings.Default.LastSelectedPathForExtraction = dlg.SelectedPath;//settings are saved when window is closing
+            Settings.Default.LastSelectedPathForExtraction = dlg.SelectedPath; // Settings are saved when the application exits
 
             BackgroundWorker wrk = new BackgroundWorker();
             wrk.WorkerReportsProgress = true;
