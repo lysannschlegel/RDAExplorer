@@ -7,7 +7,8 @@
         xmlns:FileDBGenerator_Windows_Data="clr-namespace:FileDBGenerator.Windows.Data"
         xmlns:ViewModels="clr-namespace:FileDBGenerator.ViewModels"
         mc:Ignorable="d"
-        Title="file.db Generator" Height="350" Width="570" ResizeMode="CanMinimize"
+        Title="file.db/checksum.db Generator"
+        MinHeight="300" MinWidth="370" Height="500" Width="570" ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance Type=ViewModels:MockMainWindowViewModel, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <FileDBGenerator_Windows_Data:InvertBooleanConverter x:Key="InvertBooleanConverter" />
@@ -48,12 +49,12 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="4" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="4" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="7" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0" Grid.Column="0" Content="RDA Files (maindata)" />
@@ -63,7 +64,7 @@
             <Button Grid.Row="0" Grid.Column="4" Content="..."
                     Click="button_SelectRDAFiles_Click" />
 
-            <ListView Grid.Row="2" Grid.Column="2" Height="170"
+            <ListView Grid.Row="2" Grid.Column="2"
                      ItemsSource="{Binding RDAFileList.Items}"
                      SelectedIndex="{Binding RDAFileListSelectedIndex}">
                 <ListView.Resources>
@@ -108,14 +109,28 @@
                         IsEnabled="{Binding Path=RDAFilesMoveDownButtonEnabled}"
                         Click="button_RDAFiles_MoveDown_Click" />
             </Grid>
+            
+            <Separator Grid.Row="3" Grid.ColumnSpan="5" Margin="0,5" />
 
-            <Label Grid.Row="4" Grid.Column="0" Content="Output File (file.db)" />
+            <Label Grid.Row="4" Grid.Column="0" Content="Output file.db" />
             <TextBox Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center"
-                     Text="{Binding Path=OutputFileName, UpdateSourceTrigger=PropertyChanged}" />
+                     Text="{Binding Path=OutputFileDB, UpdateSourceTrigger=PropertyChanged}" />
             <Button Grid.Row="4" Grid.Column="4" Content="..."
-                    Click="button_SelectOutputFile_Click" />
+                    Click="button_SelectOutputFileDB_Click" />
 
-            <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Width="100" Height="32" Content="Generate"
+            <Label Grid.Row="5" Grid.Column="0">
+                <TextBlock TextWrapping="WrapWithOverflow">
+                    <Span FontSize="12">Output checksum.db</Span>
+                    <LineBreak />
+                    <Span FontSize="10">(optional, Anno 1800)</Span>
+                </TextBlock>
+            </Label>
+            <TextBox Grid.Row="5" Grid.Column="2" VerticalContentAlignment="Center"
+                     Text="{Binding Path=OutputChecksumDB, UpdateSourceTrigger=PropertyChanged}" MaxHeight="26" />
+            <Button Grid.Row="5" Grid.Column="4" Content="..."
+                    Click="button_SelectOutputChecksumDB_Click" MaxHeight="26" />
+
+            <Button Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="5" Width="100" Height="32" Content="Generate"
                     IsEnabled="{Binding GenerateButtonEnabled}"
                     Click="button_Generate_Click" />
         </Grid>

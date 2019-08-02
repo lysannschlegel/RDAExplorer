@@ -31,8 +31,8 @@ namespace FileDBGenerator
                 return @"Select the directory containing the RDA files to start.";
             } else if (this.viewModel.RDAFileList.Items.Count((RDAFileListItem item) => item.IsEnabled) == 0) {
                 return @"Enable at least one RDA file.";
-            } else if (this.viewModel.OutputFileName == "") {
-                return @"Specify the outout file name.";
+            } else if (this.viewModel.OutputFileDB == "") {
+                return @"Specify the output file name.";
             } else {
                 return @"Click Generate to start the process.";
             }
@@ -43,7 +43,7 @@ namespace FileDBGenerator
         }
         private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "OutputFileName") {
+            if (e.PropertyName == "OutputFileDB") {
                 this.UpdateGuildingMessage();
             }
         }
@@ -65,11 +65,11 @@ namespace FileDBGenerator
 
         private string FindRDAFilesInitialDirectory()
         {
-            string path = @"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\games\Anno 2205\maindata";
+            string path = @"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\games\Anno 1800\maindata";
             if (System.IO.Directory.Exists(path)) {
                 return path;
             }
-            path = @"C:\Program Files\Ubisoft\Ubisoft Game Launcher\games\Anno 2205\maindata";
+            path = @"C:\Program Files\Ubisoft\Ubisoft Game Launcher\games\Anno 1800\maindata";
             if (System.IO.Directory.Exists(path)) {
                 return path;
             }
@@ -113,14 +113,25 @@ namespace FileDBGenerator
             }
         }
 
-        private void button_SelectOutputFile_Click(object sender, RoutedEventArgs e)
+        private void button_SelectOutputFileDB_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.WindowsAPICodePack.Dialogs.CommonSaveFileDialog();
             dialog.InitialDirectory = this.viewModel.RDAFilesFolder;
             dialog.DefaultFileName = "file.db";
-            dialog.Filters.Add(new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter("Anno 2205 File Index", "*.db"));
+            dialog.Filters.Add(new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter("Anno 2205/1800 File Index", "*.db"));
             if (dialog.ShowDialog(this) == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok) {
-                this.viewModel.OutputFileName = dialog.FileName;
+                this.viewModel.OutputFileDB = dialog.FileName;
+            }
+        }
+
+        private void button_SelectOutputChecksumDB_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.WindowsAPICodePack.Dialogs.CommonSaveFileDialog();
+            dialog.InitialDirectory = this.viewModel.RDAFilesFolder;
+            dialog.DefaultFileName = "checksum.db";
+            dialog.Filters.Add(new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter("Anno 1800 checksum file", "*.db"));
+            if (dialog.ShowDialog(this) == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok) {
+                this.viewModel.OutputChecksumDB = dialog.FileName;
             }
         }
 
@@ -159,12 +170,25 @@ namespace FileDBGenerator
                 }
 
                 this.statusBar_textBlock_Message.Text = "Writing...";
+                await Task.Run(() => {
+                    using (var fileDBStream = new System.IO.FileStream(this.viewModel.OutputFileDB, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite)) {
+                        using (var fileDBWriter = new AnnoRDA.FileDB.Writer.FileSystemWriter(fileDBStream, true)) {
+                            fileDBWriter.WriteFileSystem(fileSystem, archiveFiles);
+                        }
 
-                using (var outputStream = new System.IO.FileStream(this.viewModel.OutputFileName, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
-                    using (var writer = new AnnoRDA.FileDB.Writer.FileSystemWriter(outputStream, false)) {
-                        await Task.Run(() => writer.WriteFileSystem(fileSystem, archiveFiles));
+                        if (this.viewModel.OutputChecksumDB != "") {
+                            fileDBStream.Position = 0;
+                            byte[] checksum = ComputeChecksum(fileDBStream);
+                            fileDBStream.Dispose();
+
+                            using (var checksumDBStream = new System.IO.FileStream(this.viewModel.OutputChecksumDB, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
+                                using (var checksumDBWriter = new System.IO.BinaryWriter(checksumDBStream, System.Text.Encoding.ASCII, false)) {
+                                    checksumDBWriter.Write(checksum);
+                                }
+                            }
+                        }
                     }
-                }
+                });
                 this.statusBar_progressBar_Progress.Value += 1;
 
                 this.statusBar_textBlock_Message.Text = "Done";
@@ -182,6 +206,31 @@ namespace FileDBGenerator
         private void statusBar_button_Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.cancellationTokenSource.Cancel();
+        }
+
+        private byte[] ComputeChecksum(System.IO.Stream stream)
+        {
+            // Checksum is the hex representation of the MD5 of "<file.db MD5 as hex>\r\n5443083368c9be33b50e3fdb3a8fa287"
+            // Note that the hex representations must use lowercase letters.
+
+            byte[] hexAlphabet = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66 }; // 0123456789abcdef
+            byte[] additionalBytes = { 0x0D, 0x0A, 0x35, 0x34, 0x34, 0x33, 0x30, 0x38, 0x33, 0x33, 0x36, 0x38, 0x63, 0x39, 0x62, 0x65, 0x33, 0x33, 0x62, 0x35, 0x30, 0x65, 0x33, 0x66, 0x64, 0x62, 0x33, 0x61, 0x38, 0x66, 0x61, 0x32, 0x38, 0x37 }; // "\r\n5443083368c9be33b50e3fdb3a8fa287"
+
+            using (var md5 = System.Security.Cryptography.MD5.Create()) {
+                byte[] stage1Checksum = md5.ComputeHash(stream);
+                IEnumerable<byte> stage1ChecksumHex = MakeHexData(stage1Checksum);
+
+                byte[] stage2Data = stage1ChecksumHex.Concat(additionalBytes).ToArray();
+                byte[] stage2Checksum = md5.ComputeHash(stage2Data);
+                byte[] stage2ChecksumHex = MakeHexData(stage2Checksum).ToArray();
+                return stage2ChecksumHex;
+            }
+
+            IEnumerable<byte> MakeHexData(byte[] data)
+            {
+                // { 0x9a, 0x34 } -> { 0x39, 0x61, 0x33, 0x34 } == { '9', 'a', '3', '4' }
+                return data.SelectMany(b => new byte[] { hexAlphabet[b >> 4], hexAlphabet[b & 0xF] });
+            }
         }
     }
 }

@@ -66,21 +66,32 @@ namespace FileDBGenerator.ViewModels
                 return this.RDAFileListSelectedIndex > -1 && this.RDAFileListSelectedIndex + 1 < this.RDAFileList.Items.Count;
         } }
 
-        private string outputFileName = "";
-        public string OutputFileName {
+        private string outputFileDB = "";
+        public string OutputFileDB {
             get {
-                return this.outputFileName;
+                return this.outputFileDB;
             }
             set {
-                this.outputFileName = value;
-                this.NotifyPropertyChanged("OutputFileName");
+                this.outputFileDB = value;
+                this.NotifyPropertyChanged("OutputFileDB");
                 this.NotifyPropertyChanged("GenerateButtonEnabled");
+            }
+        }
+
+        private string outputChecksumDB = "";
+        public string OutputChecksumDB {
+            get {
+                return this.outputChecksumDB;
+            }
+            set {
+                this.outputChecksumDB = value;
+                this.NotifyPropertyChanged("OutputChecksumDB");
             }
         }
 
         public bool GenerateButtonEnabled { get {
                 return this.RDAFileList.Items.Any((RDAFileListItem item) => item.IsEnabled) &&
-                       this.OutputFileName != "";
+                       this.OutputFileDB != "";
         } }
 
         private bool isGenerating = false;
@@ -132,7 +143,8 @@ namespace FileDBGenerator.ViewModels
             this.RDAFileList.Items.Add(new RDAFileListItem(false, @"Dummy", "maindata/data12.rda"));
             this.RDAFileListSelectedIndex = 0;
 
-            this.OutputFileName = @"C:\Foobar\maindata\file.db";
+            this.OutputFileDB = @"C:\Foobar\maindata\file.db";
+            this.OutputChecksumDB = @"C:\Foobar\maindata\checksum.db";
         }
     }
 }
