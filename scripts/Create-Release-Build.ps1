@@ -11,7 +11,7 @@ $files = New-Object System.Collections.ArrayList
 
 # build FileDBGenerator
 dotnet restore "$root/src/FileDBGenerator"
-msbuild "$root/RDAExplorer.sln" /target:"src\FileDBGenerator" /property:Configuration=Release
+msbuild "$root/RDAExplorer.sln" /target:"src\FileDBGenerator" /property:Configuration=Release /property:Platform="Any CPU"
 if (!$?) { throw "Failed to build FileDBGenerator" }
 $files.AddRange(("$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe", `
                  "$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe.config", `
@@ -19,7 +19,7 @@ $files.AddRange(("$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe", `
 
 # build RDAExplorerGUI
 dotnet restore "$root/src/RDAExplorerGUI"
-msbuild "$root/RDAExplorer.sln" /target:"src\RDAExplorerGUI" /property:Configuration=Release
+msbuild "$root/RDAExplorer.sln" /target:"src\RDAExplorerGUI" /property:Configuration=Release /property:Platform="Any CPU"
 if (!$?) { throw "Failed to build RDAExplorerGUI" }
 $files.AddRange(("$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe", `
                  "$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe.config", `
