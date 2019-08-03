@@ -1,11 +1,16 @@
 # RDA Explorer
 
-The RDA Explorer is a Windows Application that can read and save the RDA file format used in Anno 1404, 2070 and 2205.
+The RDA Explorer is a Windows Application that can read and save the RDA file format used in Anno 1404, 2070, 2205 and 1800.
 
-You can download a pre-release version of the new RDA Explorer here: [Releases](../../releases)
+You can download the latest version here: [Releases](../../releases)
 
-**Note:** Adjustments for the new file format used in Anno 2205 is still in early stages and not tested very well. Also the changes might have broken somthing for the old file format.<br/>
 If you encounter any bugs, please let me know by creating an issue. Pull requests are also welcome :)
+
+# Related projects
+
+- [Anno 1800 Mod Loader](https://github.com/xforce/anno1800-mod-loader)
+
+    "The one and only mod loader for Anno 1800, supports loading of unpacked RDA files, XML merging and Python mods."
 
 # Contributing
 
@@ -17,4 +22,4 @@ If you are a programmer, you can find more information [in the wiki](../../wiki/
 See LICENSE.txt or COPYING file in the respective subdirectories.
 
 This project is not affiliated in any way with Ubisoft.<br />
-Anno 2070, Anno 2205, Ubisoft and the Ubisoft logo are trademarks of Ubisoft Entertainment in the US and/or other countries. Anno, Blue Byte and the Blue Byte logo are trademarks of Ubisoft GmbH in the US and/or other countries. 
+Anno 2070, Anno 2205, Anno 1800, Ubisoft and the Ubisoft logo are trademarks of Ubisoft Entertainment in the US and/or other countries. Anno, Blue Byte and the Blue Byte logo are trademarks of Ubisoft GmbH in the US and/or other countries. 
