@@ -110,6 +110,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA.ChecksumDB\AnnoRDA.ChecksumDB.csproj">
+      <Project>{09af4fe8-37de-4090-9194-ef7a3215893f}</Project>
+      <Name>AnnoRDA.ChecksumDB</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.csproj">
       <Project>{7e632388-82b6-46fa-ac73-1758b79391bd}</Project>
       <Name>AnnoRDA.FileDB</Name>

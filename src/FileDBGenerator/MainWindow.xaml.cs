@@ -178,11 +178,11 @@ namespace FileDBGenerator
 
                         if (this.viewModel.OutputChecksumDB != "") {
                             fileDBStream.Position = 0;
-                            byte[] checksum = ComputeChecksum(fileDBStream);
+                            byte[] checksum = AnnoRDA.ChecksumDB.Generator.ComputeChecksum(fileDBStream);
                             fileDBStream.Dispose();
 
                             using (var checksumDBStream = new System.IO.FileStream(this.viewModel.OutputChecksumDB, System.IO.FileMode.Create, System.IO.FileAccess.Write)) {
-                                using (var checksumDBWriter = new System.IO.BinaryWriter(checksumDBStream, System.Text.Encoding.ASCII, false)) {
+                                using (var checksumDBWriter = new System.IO.BinaryWriter(checksumDBStream)) {
                                     checksumDBWriter.Write(checksum);
                                 }
                             }
@@ -206,31 +206,6 @@ namespace FileDBGenerator
         private void statusBar_button_Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.cancellationTokenSource.Cancel();
-        }
-
-        private byte[] ComputeChecksum(System.IO.Stream stream)
-        {
-            // Checksum is the hex representation of the MD5 of "<file.db MD5 as hex>\r\n5443083368c9be33b50e3fdb3a8fa287"
-            // Note that the hex representations must use lowercase letters.
-
-            byte[] hexAlphabet = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66 }; // 0123456789abcdef
-            byte[] additionalBytes = { 0x0D, 0x0A, 0x35, 0x34, 0x34, 0x33, 0x30, 0x38, 0x33, 0x33, 0x36, 0x38, 0x63, 0x39, 0x62, 0x65, 0x33, 0x33, 0x62, 0x35, 0x30, 0x65, 0x33, 0x66, 0x64, 0x62, 0x33, 0x61, 0x38, 0x66, 0x61, 0x32, 0x38, 0x37 }; // "\r\n5443083368c9be33b50e3fdb3a8fa287"
-
-            using (var md5 = System.Security.Cryptography.MD5.Create()) {
-                byte[] stage1Checksum = md5.ComputeHash(stream);
-                IEnumerable<byte> stage1ChecksumHex = MakeHexData(stage1Checksum);
-
-                byte[] stage2Data = stage1ChecksumHex.Concat(additionalBytes).ToArray();
-                byte[] stage2Checksum = md5.ComputeHash(stage2Data);
-                byte[] stage2ChecksumHex = MakeHexData(stage2Checksum).ToArray();
-                return stage2ChecksumHex;
-            }
-
-            IEnumerable<byte> MakeHexData(byte[] data)
-            {
-                // { 0x9a, 0x34 } -> { 0x39, 0x61, 0x33, 0x34 } == { '9', 'a', '3', '4' }
-                return data.SelectMany(b => new byte[] { hexAlphabet[b >> 4], hexAlphabet[b & 0xF] });
-            }
         }
     }
 }
