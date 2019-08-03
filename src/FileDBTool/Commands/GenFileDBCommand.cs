@@ -1,29 +1,29 @@
-using System.Collections.Generic;
-using System.Linq;
-
 namespace RDAExplorer.FileDBTool.Commands
 {
     class GenFileDBCommand : ManyConsole.ConsoleCommand
     {
-        private string outputFileName;
-
         public GenFileDBCommand()
         {
             IsCommand("gen.file.db", "Generate file.db from RDA files");
-
             AllowsAnyAdditionalArguments("(RDA files)|(directory containing RDA files)");
-
-            HasRequiredOption("output|o=", "Path to output file", (value) => { this.outputFileName = value; });
         }
 
         public override int Run(string[] remainingArguments)
         {
-            Generate(remainingArguments, this.outputFileName, fileDBStreamAction: null);
+            // writing to memory first since the console stream doesn't support seeking, but Generate requires a seekable stream
+            using (var fileDBStream = new System.IO.MemoryStream()) {
+                Generate(remainingArguments, fileDBStream);
+
+                using (var outputStream = System.Console.OpenStandardOutput()) {
+                    fileDBStream.Position = 0;
+                    fileDBStream.CopyTo(outputStream);
+                }
+            }
 
             return 0;
         }
 
-        public static void Generate(string[] archiveFileNames, string outputFileName, System.Action<System.IO.Stream> fileDBStreamAction)
+        public static void Generate(string[] archiveFileNames, System.IO.Stream outputStream)
         {
             var archiveFiles = new AnnoRDA.FileDB.Writer.ArchiveFileMap();
             AnnoRDA.FileSystem fileSystem;
@@ -47,15 +47,8 @@ namespace RDAExplorer.FileDBTool.Commands
                 }
             }
 
-            using (var fileDBStream = new System.IO.FileStream(outputFileName, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite)) {
-                using (var fileDBWriter = new AnnoRDA.FileDB.Writer.FileSystemWriter(fileDBStream, true)) {
-                    fileDBWriter.WriteFileSystem(fileSystem, archiveFiles);
-                }
-
-                if (fileDBStreamAction != null) {
-                    fileDBStream.Position = 0;
-                    fileDBStreamAction(fileDBStream);
-                }
+            using (var fileDBWriter = new AnnoRDA.FileDB.Writer.FileSystemWriter(outputStream, true)) {
+                fileDBWriter.WriteFileSystem(fileSystem, archiveFiles);
             }
         }
 

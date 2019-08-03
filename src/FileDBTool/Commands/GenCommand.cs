@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
 
 namespace RDAExplorer.FileDBTool.Commands
 {
@@ -20,16 +19,16 @@ namespace RDAExplorer.FileDBTool.Commands
 
         public override int Run(string[] remainingArguments)
         {
-            GenFileDBCommand.Generate(remainingArguments, this.outputFileDBName, this.GenerateChecksumDB);
+            using (var outputStream = new System.IO.FileStream(this.outputFileDBName, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite)) {
+                GenFileDBCommand.Generate(remainingArguments, outputStream);
+
+                if (this.outputChecksumDBName != null) {
+                    outputStream.Position = 0;
+                    GenChecksumDBCommand.Generate(outputStream, this.outputChecksumDBName);
+                }
+            }
 
             return 0;
-        }
-
-        private void GenerateChecksumDB(System.IO.Stream fileDBStream)
-        {
-            if (this.outputChecksumDBName != null) {
-                GenChecksumDBCommand.Generate(fileDBStream, this.outputChecksumDBName);
-            }
         }
     }
 }
