@@ -10,16 +10,14 @@ namespace ManyConsole
 {
     public class ConsoleCommandDispatcher
     {
-        public static int DispatchCommand(ConsoleCommand command, string[] arguments, TextWriter consoleOut)
+        public static int DispatchCommand(ConsoleCommand command, string[] arguments, TextWriter consoleOut, TextWriter consoleErr)
         {
-            return DispatchCommand(new [] {command}, arguments, consoleOut);
+            return DispatchCommand(new [] {command}, arguments, consoleOut, consoleErr);
         }
 
-        public static int DispatchCommand(IEnumerable<ConsoleCommand> commands, string[] arguments, TextWriter consoleOut, bool skipExeInExpectedUsage = false)
+        public static int DispatchCommand(IEnumerable<ConsoleCommand> commands, string[] arguments, TextWriter consoleOut, TextWriter consoleErr, bool skipExeInExpectedUsage = false)
         {
             ConsoleCommand selectedCommand = null;
-
-            TextWriter console = consoleOut;
 
             foreach (var command in commands)
             {
@@ -53,9 +51,9 @@ namespace ManyConsole
                         selectedCommand = GetMatchingCommand(commands, arguments.Skip(1).FirstOrDefault());
 
                         if (selectedCommand == null)
-                            ConsoleHelp.ShowSummaryOfCommands(commands, console);
+                            ConsoleHelp.ShowSummaryOfCommands(commands, consoleOut);
                         else
-                            ConsoleHelp.ShowCommandHelp(selectedCommand, console, skipExeInExpectedUsage);
+                            ConsoleHelp.ShowCommandHelp(selectedCommand, consoleOut, skipExeInExpectedUsage);
 
                         return -1;
                     }
@@ -77,17 +75,17 @@ namespace ManyConsole
                 if (preResult.HasValue)
                     return preResult.Value;
 
-                ConsoleHelp.ShowParsedCommand(selectedCommand, console);
+                ConsoleHelp.ShowParsedCommand(selectedCommand, consoleOut);
 
                 return selectedCommand.Run(remainingArguments.ToArray());
             }
             catch (ConsoleHelpAsException e)
             {
-                return DealWithException(e, console, skipExeInExpectedUsage, selectedCommand, commands);
+                return DealWithException(e, consoleErr, skipExeInExpectedUsage, selectedCommand, commands);
             }
             catch (NDesk.Options.OptionException e)
             {
-                return DealWithException(e, console, skipExeInExpectedUsage, selectedCommand, commands);
+                return DealWithException(e, consoleErr, skipExeInExpectedUsage, selectedCommand, commands);
             }
         }
 
