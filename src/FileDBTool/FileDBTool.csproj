@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA.ChecksumDB\AnnoRDA.ChecksumDB.csproj" />
     <ProjectReference Include="..\..\lib\ManyConsole\ManyConsole.csproj" />
     <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA\AnnoRDA.csproj" />
     <ProjectReference Include="..\..\lib\AnnoRDA\AnnoRDA.FileDB\AnnoRDA.FileDB.csproj" />
