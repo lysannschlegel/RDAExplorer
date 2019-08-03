@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>0.2.1</VersionPrefix>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <DefineConstants>$(DefineConstants);LINQ;NDESK_OPTIONS</DefineConstants>
     <AssemblyName>NDesk.Options</AssemblyName>
-    <PackageId>NDesk.Options</PackageId>
+    <VersionPrefix>0.2.1.1</VersionPrefix>
   </PropertyGroup>
 
 </Project>

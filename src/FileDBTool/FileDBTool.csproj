@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
     <AssemblyName>FileDBTool</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>FileDBTool</PackageId>
+    <VersionPrefix>1.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
