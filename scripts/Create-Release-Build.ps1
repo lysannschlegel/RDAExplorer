@@ -10,7 +10,7 @@ $root="$PSScriptRoot/.."
 $files = New-Object System.Collections.ArrayList
 
 # build FileDBGenerator
-dotnet restore src/FileDBGenerator
+dotnet restore "$root/src/FileDBGenerator"
 msbuild "$root/RDAExplorer.sln" /target:"src\FileDBGenerator" /property:Configuration=Release
 if (!$?) { throw "Failed to build FileDBGenerator" }
 $files.AddRange(("$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe", `
@@ -18,7 +18,7 @@ $files.AddRange(("$root/src/FileDBGenerator/bin/Release/FileDBGenerator.exe", `
                  "$root/src/FileDBGenerator/bin/Release/*.dll"))
 
 # build RDAExplorerGUI
-dotnet restore src/RDAExplorerGUI
+dotnet restore "$root/src/RDAExplorerGUI"
 msbuild "$root/RDAExplorer.sln" /target:"src\RDAExplorerGUI" /property:Configuration=Release
 if (!$?) { throw "Failed to build RDAExplorerGUI" }
 $files.AddRange(("$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe", `
@@ -27,7 +27,7 @@ $files.AddRange(("$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe", `
 
 # create zip
 $version = (dir "$root/src/RDAExplorerGUI/bin/Release/RDAExplorerGUI.exe").VersionInfo.ProductVersion
-$archiveName = "RDAExplorer-" + $version + ".zip"
+$archiveName = "$root/RDAExplorer-" + $version + ".zip"
 Compress-Archive $files `
     -DestinationPath $archiveName `
     -Force
