@@ -86,7 +86,7 @@ namespace FileDBGenerator
             this.viewModel.RDAFilesFolder = path;
             System.Uri pathUri = new System.Uri(path);
 
-            IEnumerable<string> containerPaths = System.IO.Directory.GetFiles(this.viewModel.RDAFilesFolder, @"data*.rda");
+            IEnumerable<string> containerPaths = System.IO.Directory.GetFiles(this.viewModel.RDAFilesFolder, @"*.rda");
             containerPaths = AnnoRDA.Loader.ContainerDirectoryLoader.SortContainerPaths(containerPaths);
             this.viewModel.RDAFileList.Items.Clear();
             foreach (string filePath in containerPaths) {
