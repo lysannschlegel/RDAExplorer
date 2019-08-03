@@ -14,7 +14,7 @@ namespace ManyConsole
         {
             OneLineDescription = "";
             Options = new OptionSet();
-            TraceCommandAfterParse = true;
+            TraceCommandAfterParse = false;
             RemainingArgumentsCount = 0;
             RemainingArgumentsHelpText = "";
             OptionsHasd = new OptionSet();
@@ -57,9 +57,9 @@ namespace ManyConsole
             return this;
         }
 
-        public ConsoleCommand SkipsCommandSummaryBeforeRunning()
+        public ConsoleCommand ShowsCommandSummaryBeforeRunning()
         {
-            TraceCommandAfterParse = false;
+            TraceCommandAfterParse = true;
             return this;
         }
 
