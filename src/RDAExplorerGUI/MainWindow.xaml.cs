@@ -233,7 +233,7 @@ namespace RDAExplorerGUI
         private void file_OpenReadOnly_Click(object sender, RoutedEventArgs e)
         {
             AnnoModificationManager4.Misc.OpenFileDialog openFileDialog = new AnnoModificationManager4.Misc.OpenFileDialog();
-            openFileDialog.Filter = "Valid Files|*.rda;*.sww;*.rdu|All files|*.*";
+            openFileDialog.Filter = "Valid Files|*.rda;*.sww;*.rdu;*.a7m|All files|*.*";
             bool? nullable = openFileDialog.ShowDialog();
             if ((!nullable.GetValueOrDefault() ? 0 : (nullable.HasValue ? 1 : 0)) == 0)
                 return;
@@ -243,7 +243,7 @@ namespace RDAExplorerGUI
         private void file_Open_Click(object sender, RoutedEventArgs e)
         {
             AnnoModificationManager4.Misc.OpenFileDialog openFileDialog = new AnnoModificationManager4.Misc.OpenFileDialog();
-            openFileDialog.Filter = "Valid Files|*.rda;*.sww;*.rdu|All files|*.*";
+            openFileDialog.Filter = "Valid Files|*.rda;*.sww;*.rdu;*.a7m|All files|*.*";
             bool? nullable = openFileDialog.ShowDialog();
             if ((!nullable.GetValueOrDefault() ? 0 : (nullable.HasValue ? 1 : 0)) == 0)
                 return;
