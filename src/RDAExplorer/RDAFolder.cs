@@ -1,4 +1,4 @@
-﻿using AnnoModificationManager4.Misc;
+﻿
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -114,7 +114,8 @@ namespace RDAExplorer
             if (list.Count == 1)
                 return root1;
             list.RemoveAt(0);
-            return NavigateTo(root1, StringExtension.PutTogether(list, '/'), CurrentPos + "/" + str);
+
+            return NavigateTo(root1, string.Join("/", list), CurrentPos + "/" + str);
         }
     }
 }

@@ -56,11 +56,5 @@
     <Compile Include="ZLib\ZLib.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AnnoModificationManager4\AnnoModificationManager4.csproj">
-      <Project>{579d60f0-65bd-4577-b3d2-a9c80b7d9baa}</Project>
-      <Name>AnnoModificationManager4</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
